@@ -14,18 +14,22 @@ def main(request):
 
 
 def products(request):
+    with open(os.path.join(THIS_DIR, 'products.json'), 'r') as file:
+        products = json.load(file)
+
     context = {
-        'title': 'каталог'
+        'title': 'каталог',
+        'products': products,
     }
     return render(request, 'mainapp/products.html', context)
 
 
 def contact(request):
-    with open(f'{THIS_DIR}\contact.json', 'r') as read_file:
+    with open(os.path.join(THIS_DIR, 'contacts.json'), 'r') as read_file:
         contacts_list = json.load(read_file)
 
     context = {
         'title': 'Контакты',
-        'contacts': contacts_list
+        'contacts': contacts_list,
     }
     return render(request, 'mainapp/contact.html', context)
