@@ -23,55 +23,26 @@
 
 {% block content %}
 <div class="location">
+	{% for contact in contacts %}
 	<div class="location-1">
 		<i class="fa fa-map-marker fa-5x"></i>
-		<h4>Москва</h4>
+		<h4>{{ contact.city }}</h4>
 		<div class="contacts">
 			<h5>Телефон</h5>
-			<p>+7-888-888-8888</p>
+			<p>{{ contact.phone }}</p>
 		</div>
 		<div class="contacts">
 			<h5>Email</h5>
-			<p>info@geekshop.ru</p>
+			<p>{{ contact.email }}</p>
 		</div>
 		<div class="contacts">
 			<h5>Адрес</h5>
-			<p>В пределах МКАД</p>
+			<p>{{ contact.address }}</p>
 		</div>
 	</div>
-	<div class="location-1">
-		<i class="fa fa-map-marker fa-5x"></i>
-		<h4>Москва</h4>
-		<div class="contacts">
-			<h5>Телефон</h5>
-			<p>+7-888-888-8888</p>
-		</div>
-		<div class="contacts">
-			<h5>Email</h5>
-			<p>info@geekshop.ru</p>
-		</div>
-		<div class="contacts">
-			<h5>Адрес</h5>
-			<p>В пределах МКАД</p>
-		</div>
-	</div>
-	<div class="location-1">
-		<i class="fa fa-map-marker fa-5x"></i>
-		<h4>Москва</h4>
-		<div class="contacts">
-			<h5>Телефон</h5>
-			<p>+7-888-888-8888</p>
-		</div>
-		<div class="contacts">
-			<h5>Email</h5>
-			<p>info@geekshop.ru</p>
-		</div>
-		<div class="contacts">
-			<h5>Адрес</h5>
-			<p>В пределах МКАД</p>
-		</div>
-	</div>
+	{% endfor %}
 </div>
+
 
 <div class="clr"></div>
 {% endblock %}

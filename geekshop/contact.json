@@ -1,0 +1,4 @@
+[
+  {"city": "\u041c\u043e\u0441\u043a\u0432\u0430", "phone": "+7-888-888-8888", "email": "info@geekshop.ru", "address": "\u0412 \u043f\u0440\u0435\u0434\u0435\u043b\u0430\u0445 \u041c\u041a\u0410\u0414"},
+  {"city": "\u0412\u043e\u0440\u043e\u043d\u0435\u0436", "phone": "+7-111-111-1111", "email": "info2@geekshop.ru", "address": "\u0412 \u0433\u043e\u0440\u043e\u0434\u0435"},
+  {"city": "\u0412\u043b\u0430\u0434\u0438\u043c\u0438\u0440", "phone": "+7-222-222-2222", "email": "info3@geekshop.ru", "address": "\u0413\u0434\u0435-\u043d\u0438\u0431\u0443\u0434\u044c \u0435\u0449\u0451"}]

@@ -1,5 +1,10 @@
 from django.shortcuts import render
 
+import os
+import json
+
+
+THIS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def main(request):
     context = {
@@ -16,7 +21,11 @@ def products(request):
 
 
 def contact(request):
+    with open(f'{THIS_DIR}\contact.json', 'r') as read_file:
+        contacts_list = json.load(read_file)
+
     context = {
-        'title': 'контакты'
+        'title': 'Контакты',
+        'contacts': contacts_list
     }
     return render(request, 'mainapp/contact.html', context)
