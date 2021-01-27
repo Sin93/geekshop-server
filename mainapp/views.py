@@ -24,6 +24,19 @@ def products(request):
     return render(request, 'mainapp/products.html', context)
 
 
+def view_product(request, id):
+    with open(os.path.join(THIS_DIR, 'products.json'), 'r') as file:
+        products = json.load(file)
+    for product in products:
+        if int(product['id']) == id:
+            data = product
+            break
+    context = {
+        'title': data['name'],
+        'data': data
+    }
+    return render(request, 'mainapp/product.html', context)
+
 def contact(request):
     with open(os.path.join(THIS_DIR, 'contacts.json'), 'r') as read_file:
         contacts_list = json.load(read_file)
