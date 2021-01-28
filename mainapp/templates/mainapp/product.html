@@ -1,0 +1,14 @@
+{% extends 'mainapp/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+{{ title|title }}
+{% endblock %}
+
+{% block content %}
+<p>Название: {{ data.name }}</p>
+<p>Описание: {{ data.description }}</p>
+<p>Цена: {{ data.price }}</p>
+<img src="{{ data.image }}" alt="">
+<a href="{% url 'products' %}">Назад</a>
+{% endblock %}
