@@ -14,7 +14,7 @@ def main(request):
 
 
 def products(request):
-    with open(os.path.join(THIS_DIR, 'products.json'), 'r') as file:
+    with open(os.path.join(THIS_DIR, 'mainapp', 'fixtures', 'products.json'), 'r') as file:
         products = json.load(file)
 
     context = {
@@ -25,7 +25,7 @@ def products(request):
 
 
 def view_product(request, id):
-    with open(os.path.join(THIS_DIR, 'products.json'), 'r') as file:
+    with open(os.path.join(THIS_DIR, 'mainapp', 'fixtures', 'products.json'), 'r') as file:
         products = json.load(file)
     for product in products:
         if int(product['id']) == id:
@@ -38,7 +38,7 @@ def view_product(request, id):
     return render(request, 'mainapp/product.html', context)
 
 def contact(request):
-    with open(os.path.join(THIS_DIR, 'contacts.json'), 'r') as read_file:
+    with open(os.path.join(THIS_DIR, 'mainapp', 'fixtures', 'contacts.json'), 'r') as read_file:
         contacts_list = json.load(read_file)
 
     context = {
