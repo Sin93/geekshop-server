@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from mainapp.models import ProductCategory, Product
 
 import os
 import json
@@ -13,27 +14,26 @@ def main(request):
     return render(request, 'mainapp/index.html', context)
 
 
-def products(request):
-    with open(os.path.join(THIS_DIR, 'mainapp', 'fixtures', 'products.json'), 'r') as file:
-        products = json.load(file)
-
+def products(request, category=None):
     context = {
         'title': 'каталог',
-        'products': products,
+        'categories': ProductCategory.objects.all(),
     }
+
+    if not category:
+        context['products'] = Product.objects.all()
+    else:
+        category = get_object_or_404(ProductCategory, url=category)
+        context['products'] = Product.objects.filter(category=category)
+
     return render(request, 'mainapp/products.html', context)
 
 
 def view_product(request, id):
-    with open(os.path.join(THIS_DIR, 'mainapp', 'fixtures', 'products.json'), 'r') as file:
-        products = json.load(file)
-    for product in products:
-        if int(product['id']) == id:
-            data = product
-            break
+    product = get_object_or_404(Product, pk=id)
     context = {
-        'title': data['name'],
-        'data': data
+        'title': product.name,
+        'data': product
     }
     return render(request, 'mainapp/product.html', context)
 
