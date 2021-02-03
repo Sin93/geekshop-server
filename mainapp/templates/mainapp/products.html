@@ -11,7 +11,7 @@
 		<a href="index.html" class="logo"></a>
 		<ul class="menu">
 			<li><a href="{% url 'main' %}">домой</a></li>
-			<li><a href="{% url 'products' %}" class="active">продукты</a></li>
+			<li><a href="{% url 'all_products' %}" class="active">продукты</a></li>
 			<li><a href="{% url 'contact' %}">контакты</a></li>
 		</ul>
 		<a href="#" class="search"></a>
@@ -24,11 +24,10 @@
 <div class="details">
 	<div class="links clearfix">
 		<ul class="links-menu">
-			<li><a href="#" class="active">все</a></li>
-			<li><a href="#">дом</a></li>
-			<li><a href="#">офис</a></li>
-			<li><a href="#">модерн</a></li>
-			<li><a href="#">классика</a></li>
+			<li><a href="{% url 'all_products' %}" class="active">все</a></li>
+			{% for category in categories %}
+				<li><a href="{% url 'products' category.url %}">{{ category.name }}</a></li>
+			{% endfor %}
 		</ul>
 	</div>
 
@@ -82,7 +81,13 @@
 		<div class="related-products clearfix">
 			{% for product in products %}
 				<div class="block">
-					<a href="{% url 'product' product.id %}"><img src="{{ product.image }}" alt="">
+					<a href="{% url 'product' product.pk %}">
+						{% if not product.image %}
+						<img src="{{ product.image }}" alt="">
+						{% else %}
+						<img src="{% static 'img/product-11.jpg' %}" alt="">
+						{% endif %}
+
 						<div class="text">
 							<img src="{% static 'img/icon-hover.png' %}" alt="img">
 							<h4>{{ product.name }}</h4>
