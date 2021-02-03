@@ -22,14 +22,7 @@
 
 {% block content %}
 <div class="details">
-	<div class="links clearfix">
-		<ul class="links-menu">
-			<li><a href="{% url 'mainapp:all_products' %}" class="active">все</a></li>
-			{% for category in categories %}
-				<li><a href="{% url 'mainapp:category' category.url %}">{{ category.name }}</a></li>
-			{% endfor %}
-		</ul>
-	</div>
+	{% include "mainapp/include/categories.html" %}
 
 	<div class="details-products">
 		<div class="details-slider">

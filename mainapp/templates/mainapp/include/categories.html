@@ -1,0 +1,12 @@
+<div class="links clearfix">
+  <ul class="links-menu">
+    <li><a href="{% url 'mainapp:all_products' %}" {% if not category_url %}class="active"{% endif %}>все</a></li>
+    {% for category in categories %}
+      <li>
+        <a href="{% url 'mainapp:category' category.url %}"{% if category_url == category.url %} class="active"{% endif %}>
+          {{ category.name }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>

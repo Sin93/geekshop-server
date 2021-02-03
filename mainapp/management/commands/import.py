@@ -8,7 +8,7 @@ import json
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
-        ShopUser.objects.create_superuser(username='django', email='', password='geekbrains', age=30)
+        ShopUser.objects.create_superuser(username='django', email='', password='geekbrains')
 
         with open('mainapp/fixtures/categories.json', 'r') as file:
             categories = json.load(file)
