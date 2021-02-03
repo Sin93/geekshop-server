@@ -11,7 +11,7 @@
 		<a href="index.html" class="logo"></a>
 		<ul class="menu">
 			<li><a href="{% url 'main' %}">домой</a></li>
-			<li><a href="{% url 'all_products' %}" class="active">продукты</a></li>
+			<li><a href="{% url 'mainapp:all_products' %}" class="active">продукты</a></li>
 			<li><a href="{% url 'contact' %}">контакты</a></li>
 		</ul>
 		<a href="#" class="search"></a>
@@ -24,9 +24,9 @@
 <div class="details">
 	<div class="links clearfix">
 		<ul class="links-menu">
-			<li><a href="{% url 'all_products' %}" class="active">все</a></li>
+			<li><a href="{% url 'mainapp:all_products' %}" class="active">все</a></li>
 			{% for category in categories %}
-				<li><a href="{% url 'products' category.url %}">{{ category.name }}</a></li>
+				<li><a href="{% url 'mainapp:category' category.url %}">{{ category.name }}</a></li>
 			{% endfor %}
 		</ul>
 	</div>
@@ -76,16 +76,16 @@
 	<div class="related">
 		<div class="title clearfix">
 			<h2>Похожие продукты</h2>
-			<a class="explore" href="#">показать все <img src="{% static 'img/arrow.png' %}" alt=""></a>
+			<a class="explore" href="{% url 'mainapp:all_products' %}">показать все <img src="{% static 'img/arrow.png' %}" alt=""></a>
 		</div>
 		<div class="related-products clearfix">
 			{% for product in products %}
 				<div class="block">
 					<a href="{% url 'product' product.pk %}">
 						{% if not product.image %}
-						<img src="{{ product.image }}" alt="">
-						{% else %}
 						<img src="{% static 'img/product-11.jpg' %}" alt="">
+						{% else %}
+						<img src="{{ product.image }}" alt="">
 						{% endif %}
 
 						<div class="text">

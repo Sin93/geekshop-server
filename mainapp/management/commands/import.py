@@ -1,6 +1,6 @@
 from django.core.management import BaseCommand
 from mainapp.models import ProductCategory, Product
-from django.contrib.auth.models import User
+from authapp.models import ShopUser
 
 import json
 
@@ -8,7 +8,7 @@ import json
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
-        User.objects.create_superuser(username='django', email='', password='geekbrains')
+        ShopUser.objects.create_superuser(username='django', email='', password='geekbrains', age=30)
 
         with open('mainapp/fixtures/categories.json', 'r') as file:
             categories = json.load(file)
