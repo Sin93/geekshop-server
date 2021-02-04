@@ -1,17 +1,17 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 import mainapp.views as mainapp
 
 
 urlpatterns = [
     path('', mainapp.main, name='main'),
-    path('all_products/', mainapp.products, name='all_products'),
-    path('products/<str:category>', mainapp.products, name='products'),
     path('product/<int:id>', mainapp.view_product, name='product'),
+    path('products/', include('mainapp.urls', namespace='mainapp')),
     path('contact/', mainapp.contact, name='contact'),
+    path('auth/', include('authapp.urls', namespace='auth')),
     path('admin/', admin.site.urls),
 ]
 

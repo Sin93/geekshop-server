@@ -17,6 +17,7 @@ def main(request):
 def products(request, category=None):
     context = {
         'title': 'каталог',
+        'category_url': category,
         'categories': ProductCategory.objects.all(),
     }
 
