@@ -58,6 +58,7 @@ def contact(request):
 def add_basket_in_context(request, context):
     if request.user.is_authenticated:
         basket = Basket.objects.filter(user=request.user)
-        context['basket'] = basket
-        context['basket_sum'] = basket[0].total_cost() if basket else None
+        if basket:
+            context['basket'] = basket
+            context['basket_sum'] = basket[0].total_cost()
         return context
