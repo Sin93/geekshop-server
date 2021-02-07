@@ -11,7 +11,7 @@
       <br>
       <span class="product_name">Название: {{ item.product.name }}</span>
       <br>
-      <span class="product_price">Стоимость: {{ item.product.price }}&nbspруб</span>
+      <span class="product_price">Цена: {{ item.product.price }}&nbspруб</span>
       <br>
       <label for="quantity_{{ item.pk }}">Количество: </label>
       <input type="number" name="{{ item.pk }}" id="quantity_{{ item.pk }}" min="0" value="{{ item.quantity }}">
