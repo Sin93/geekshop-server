@@ -3,6 +3,7 @@
 
 
 {% block content %}
+{{ register_form.errors|escape }}
 <form class="form-horizontal" action="{% url 'auth:register' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ register_form.as_p }}

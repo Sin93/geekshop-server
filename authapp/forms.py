@@ -35,6 +35,8 @@ class ShopUserRegisterForm(UserCreationForm):
 
 
 class ShopUserEditForm(UserChangeForm):
+    avatar = forms.ImageField(widget=forms.FileInput, required=False)
+
     class Meta:
         model = ShopUser
         fields = ('username', 'email', 'first_name', 'age', 'avatar', 'password')
@@ -46,6 +48,8 @@ class ShopUserEditForm(UserChangeForm):
             field.help_text = ''
             if field_name == 'password':
                 field.widget = forms.HiddenInput()
+            if field_name == 'avatar':
+                field.label = 'Аватар'
 
         self.fields['username'].widget.attrs['readonly'] = True
         self.fields['email'].widget.attrs['readonly'] = True

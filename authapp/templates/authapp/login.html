@@ -3,11 +3,15 @@
 
 
 {% block content %}
-    <form class="form-horizontal" action="{% url 'auth:login' %}" method="post">
-        {% csrf_token %}
-        {{ login_form.as_p }}
-        <br>
-        <input class="form-control" type="submit" value="войти">
-    </form>
-
+{{ login_form.errors|escape }}
+<form class="form-horizontal" action="{% url 'auth:login' %}" method="post">
+  {% csrf_token %}
+  <div class="mb-3">
+    {{ login_form.username }}
+  </div>
+  <div class="mb-3">
+    {{ login_form.password }}
+  </div>
+  <input class="form-control" type="submit" value="войти">
+</form>
 {% endblock %}
