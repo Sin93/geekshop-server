@@ -9,13 +9,13 @@ class Basket(models.Model):
     quantity = models.PositiveIntegerField(verbose_name='количество', default=0)
     add_datetime = models.DateTimeField(verbose_name='время', auto_now_add=True)
 
-    @staticmethod
-    def basket_sum(user):
-        total_cost = 0
-        total_quantity = 0
-        basket = Basket.objects.filter(user=user)
-        for itm in basket:
-            total_cost += itm.quantity * itm.product.price
-            total_quantity += itm.quantity
+    def sum(self):
+        return self.quantity * self.product.price
 
-        return {'total_cost': total_cost, 'total_quantity': total_quantity}
+    def total_cost(self):
+        baskets = Basket.objects.filter(user=self.user)
+        return sum(basket.sum() for basket in baskets)
+
+    def total_quantity(self):
+        baskets = Basket.objects.filter(user=self.user)
+        return sum(basket.quantity for basket in baskets)

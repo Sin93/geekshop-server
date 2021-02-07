@@ -9,9 +9,9 @@ def basket(request):
     content = {
         'title': 'корзина',
         'basket_items': basket_items,
+        'basket_sum': basket_items[0].total_cost() if basket_items else None,
+        'basket_quantity': basket_items[0].total_quantity() if basket_items else None,
     }
-
-    content['basket_sum'] = Basket.basket_sum(request.user)
 
     return render(request, 'basketapp/basket.html', content)
 
