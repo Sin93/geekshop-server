@@ -3,7 +3,9 @@
 
 
 {% block content %}
-{{ login_form.errors|escape }}
+{% if login_form.non_field_errors %}
+  {{ login_form.non_field_errors|escape }}
+{% endif %}
 <form class="form-horizontal" action="{% url 'auth:login' %}" method="post">
   {% csrf_token %}
   <div class="mb-3">

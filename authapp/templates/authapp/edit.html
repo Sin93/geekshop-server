@@ -3,7 +3,9 @@
 
 
 {% block content %}
-  {{ edit_form.errors|escape }}
+  {% if edit_form.errors %}
+    {{ edit_form.errors|escape }}
+  {% endif %}
   <form class="form-horizontal" action="{% url 'auth:edit' %}" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       {{ edit_form.as_p }}
