@@ -11,6 +11,8 @@ def basket(request):
         'basket_items': basket_items,
     }
 
+    content['basket_sum'] = Basket.basket_sum(request.user)
+
     return render(request, 'basketapp/basket.html', content)
 
 

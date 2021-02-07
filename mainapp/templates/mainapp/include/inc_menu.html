@@ -34,7 +34,7 @@
   </ul>
   <a href="{% url 'basket:view' %}" class="basket">
     <span>
-        {% if basket %} {{ basket|length }} {% endif %}
+        товаров в корзине на сумму: {% if basket %} {{ basket_sum }} {% endif %}
     </span>
   </a>
   <a href="#" class="search"></a>
