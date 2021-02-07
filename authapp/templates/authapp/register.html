@@ -11,5 +11,7 @@
     {{ register_form.as_p }}
     <br>
     <input class="form-control" type="submit" value="зарегистрироваться">
+    <a class="form-control btn btn-primary" href="{% url 'auth:login' %}" role="button">Войти</a>
+    <a class="form-control btn btn-primary" href="{% url 'main' %}" role="button">На главную</a>
 </form>
 {% endblock %}
