@@ -32,5 +32,10 @@
     </li>
 
   </ul>
+  <a href="{% url 'basket:view' %}" class="basket">
+    <span>
+        {% if basket %} {{ basket|length }} {% endif %}
+    </span>
+  </a>
   <a href="#" class="search"></a>
 </div>
