@@ -80,9 +80,10 @@ html, body {
 	top: 63px;
 	left: 1176px;
 }
+
 .basket {
 	display: block;
-	width: 23px;
+	width: 200px;
 	height: 23px;
 	background-image: url(/static/img/basket.png);
 	position: absolute;
@@ -1069,4 +1070,14 @@ td:first-child {
 }
 .related-products a:hover .text{
 	display: block;
+}
+
+.basket_record img {
+	width: 145px;
+	height: 145px;
+	float: left;
+}
+
+.basket_record {
+	margin-bottom: 20px;
 }

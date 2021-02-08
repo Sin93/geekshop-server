@@ -65,7 +65,7 @@
 		<div class="related-products clearfix">
 			{% for product in products %}
 				<div class="block">
-					<a href="{% url 'product' product.pk %}">
+					<a href="{% url 'basketapp:add' product.pk %}">
 						{% if not product.image %}
 						<img src="{% static 'img/product-11.jpg' %}" alt="">
 						{% else %}

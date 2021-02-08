@@ -3,11 +3,24 @@
 
 
 {% block content %}
-    <form class="form-horizontal" action="{% url 'auth:login' %}" method="post">
-        {% csrf_token %}
-        {{ login_form.as_p }}
-        <br>
-        <input class="form-control" type="submit" value="войти">
-    </form>
+{% if login_form.non_field_errors %}
+  {{ login_form.non_field_errors|escape }}
+{% endif %}
+{% if messages %}
+  {% for message in messages %}
+    {{ message }}
+  {% endfor %}
+{% endif %}
+<form class="form-horizontal" action="{% url 'auth:login' %}" method="post">
+  {% csrf_token %}
+  <div class="mb-3">
+    {{ login_form.username }}
+  </div>
+  <div class="mb-3">
+    {{ login_form.password }}
+  </div>
+  <input class="form-control" type="submit" value="войти">
+  <a class="form-control btn btn-primary" href="{% url 'auth:register' %}" role="button">Зарегистрироваться</a>
+</form>
 
 {% endblock %}
