@@ -4,7 +4,7 @@ $(document).ready(function (){
     console.log(`/basket/edit/${target_input.name}/${target_input.value}`)
 
     $.ajax({
-      url: `/basket/edit/${target_input.name}/${target_input.value}/`,
+      url: `/basket/edit/${Number(target_input.name)}/${Number(target_input.value)}/`,
       success: function(data) {
         $('.basket_list').html(data.result)
       }

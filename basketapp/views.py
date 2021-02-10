@@ -43,7 +43,6 @@ def basket_remove(request, pk):
 @login_required
 def basket_edit(request, pk, quantity):
     basket_item = Basket.objects.get(pk=int(pk))
-    print(basket_item.quantity)
     if request.is_ajax():
         quantity = int(quantity)
         basket_item = Basket.objects.get(pk=int(pk))
@@ -51,7 +50,6 @@ def basket_edit(request, pk, quantity):
         if quantity > 0:
             basket_item.quantity = quantity
             basket_item.save()
-            print(basket_item.quantity)
         else:
             basket_item.delete()
 
@@ -59,6 +57,8 @@ def basket_edit(request, pk, quantity):
 
         content = {
             'basket_items': basket_items,
+            'basket_sum': basket_items[0].total_cost() if basket_items else None,
+            'basket_quantity': basket_items[0].total_quantity() if basket_items else None,
         }
 
         result = render_to_string('basketapp/includes/inc_basket_list.html', content)
