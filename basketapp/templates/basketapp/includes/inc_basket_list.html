@@ -20,8 +20,8 @@
 
 {% if basket_items %}
   <div class="basket_summary">
-    В корзине {{ basket_quantity }} товаров общей стоимостью
-              {{ basket_sum }} руб
+    В корзине {{ user.user_basket_quantity }} товаров общей стоимостью
+              {{ user.user_basket_cost }} руб
   </div>
 {% endif %}
 

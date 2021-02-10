@@ -15,9 +15,3 @@ class Basket(models.Model):
     @property
     def baskets(self):
         return Basket.objects.filter(user=self.user)
-
-    def total_cost(self):
-        return sum(basket.sum() for basket in self.baskets)
-
-    def total_quantity(self):
-        return sum(basket.quantity for basket in self.baskets)
