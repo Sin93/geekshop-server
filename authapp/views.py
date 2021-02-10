@@ -1,6 +1,7 @@
 from django.shortcuts import render, HttpResponseRedirect
 from authapp.forms import ShopUserLoginForm, ShopUserRegisterForm, ShopUserEditForm
 from django.contrib import auth, messages
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
 
@@ -46,7 +47,7 @@ def register(request):
 
     return render(request, 'authapp/register.html', content)
 
-
+@login_required
 def edit(request):
     if request.method == 'POST':
         edit_form = ShopUserEditForm(data=request.POST, files=request.FILES, instance=request.user)
