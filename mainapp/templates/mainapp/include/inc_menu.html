@@ -34,8 +34,8 @@
   </ul>
   <a href="{% url 'basket:view' %}" class="basket">
     <span>
-      {% if basket_sum > 0 %}
-        товаров в корзине на сумму: {% if basket %} {{ basket_sum }} {% endif %}
+      {% if user.user_basket_cost > 0 %}
+        товаров в корзине на сумму: {% if basket %} {{ user.user_basket_cost }} {% endif %}
       {% else %}
         Ваша корзина пуста
       {% endif %}
