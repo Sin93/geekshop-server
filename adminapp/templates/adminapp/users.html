@@ -1,0 +1,82 @@
+{% extends 'adminapp/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+  {{ title }}
+{% endblock %}
+
+{% block content %}
+  <div class="users_list">
+
+    <a class="btn btn-success" href="{% url 'admin_staff:user_create' %}" role="button">Новый пользователь</a>
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Тип пользователя</th>
+          <th scope="col">Username</th>
+          <th scope="col">Имя</th>
+          <th scope="col">Фамилия</th>
+          <th scope="col">email</th>
+          <th scope="col">Активность</th>
+          <th scope="col">Дата создания</th>
+          <th scope="col">Возраст</th>
+          <th scope="col">Аватар</th>
+          <th scope="col">Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for object in objects %}
+          <tr {% if not object.is_active %}class="table-danger"{% endif %}>
+            <td>
+              {% if object.is_superuser %}
+                администратор
+              {% elif object.is_staff %}
+                персонал
+              {% else %}
+                пользователь
+              {% endif %}
+            </td>
+            <td>{{ object.username }}</td>
+            <td>{{ object.first_name }}</td>
+            <td>{{ object.last_name }}</td>
+            <td>{{ object.email }}</td>
+            <td>
+              {% if object.is_active %}
+                <i class="fa fa-check-circle fa-x3" aria-hidden="true"></i>
+              {% else %}
+                <i class="fa fa-times-circle-o fa-x3" aria-hidden="true"></i>
+              {% endif %}
+            </td>
+            <td>{{ object.date_joined }}</td>
+            <td>{{ object.age }}</td>
+            <td class="admin_users_avatar">
+              <img src="
+                {% if object.avatar %}
+                  /media/{{ object.avatar }}
+                {% else %}
+                  {% static "img/default_avatar.jpg" %}
+                {% endif %}"
+                alt="{{ object.name }}">
+            </td>
+            <td>
+              <div class="user-edit">
+                <a class="btn btn-primary btn-sm" href="{% url 'admin_staff:user_update' object.pk %}" role="button">Редактировать</a>
+              </div>
+              {% if object.is_active %}
+              <div class="user-deactivate">
+                <a class="btn btn-danger btn-sm" href="{% url 'admin_staff:user_change_active' object.pk %}" role="button">Деактивировать</a>
+              </div>
+              {% else %}
+              <div class="user-activate">
+                <a class="btn btn-warning btn-sm" href="{% url 'admin_staff:user_change_active' object.pk %}" role="button">Активировать</a>
+              </div>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor%}
+      </tbody>
+    </table>
+
+  </div>
+{% endblock %}

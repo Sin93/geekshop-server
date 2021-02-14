@@ -67,9 +67,9 @@
 				<div class="block">
 					<a href="{% url 'basketapp:add' product.pk %}">
 						{% if not product.image %}
-						<img src="{% static 'img/product-11.jpg' %}" alt="">
+						<img class="product_img" src="{% static 'img/default_product_img.jpg' %}" alt="">
 						{% else %}
-						<img src="{{ product.image }}" alt="">
+						<img class="product_img" src="{{ product.image }}" alt="">
 						{% endif %}
 
 						<div class="text">
