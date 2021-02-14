@@ -1,18 +1,22 @@
 {% load staticfiles %}
 
 {% for item in basket_items %}
-  <div class="basket_record">
+  <div class="basket_record" id='{{ item.pk }}'>
     <img src="{% if item.product.image %}{{ item.product.image }}{% else %}{% static 'img/product-11.jpg' %}{% endif %}"
          alt="{{ item.product.short_desc }}">
     <span class="category_name">Категория: {{ item.product.category.name }}</span>
     <br>
     <span class="product_name">Название: {{ item.product.name }}</span>
     <br>
-    <span class="product_price">Цена: {{ item.product.price }}&nbspруб</span>
+    <span class="product_price" price='{{ item.product.price }}'>Цена: {{ item.product.price }}&nbspруб</span>
     <br>
-    <label for="quantity_{{ item.pk }}">Количество: </label>
-    <input type="number" name="{{ item.pk }}" id="quantity_{{ item.pk }}" min="0" value="{{ item.quantity }}">
-    <span class="product_cost">{{ item.cost }}&nbspруб</span>
+    <span>Количество:
+      <span>
+        <input type='number' class='product_quantity' value='{{ item.quantity }}' id='{{ item.pk }}'>
+      </span>
+      <i class="fa fa-plus-square-o fa-2x" name='plus' aria-hidden="true" id='{{ item.pk }}'></i>
+      <i class="fa fa-minus-square-o fa-2x" name='minus' aria-hidden="true" id='{{ item.pk }}'></i>
+    </span>
     <br>
     <a class="btn btn-primary" href="{% url 'basket:remove' item.pk %}" role="button">Удалить</a>
   </div>
@@ -20,8 +24,8 @@
 
 {% if basket_items %}
   <div class="basket_summary">
-    В корзине {{ user.user_basket_quantity }} товаров общей стоимостью
-              {{ user.user_basket_cost }} руб
+    В корзине <span class='total_quantity'>{{ user.user_basket_quantity }}</span> товаров общей стоимостью
+              <span class='total_cost'>{{ user.user_basket_cost }}</span> руб
   </div>
 {% endif %}
 

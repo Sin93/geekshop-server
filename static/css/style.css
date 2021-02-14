@@ -1081,3 +1081,14 @@ td:first-child {
 .basket_record {
 	margin-bottom: 20px;
 }
+
+input.product_quantity {
+	width: 50px;
+	-moz-appearance:textfield;
+}
+
+input.product_quantity::-webkit-outer-spin-button,
+input.product_quantity::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

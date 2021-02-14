@@ -60,5 +60,4 @@ def add_basket_in_context(request, context):
         basket = Basket.objects.filter(user=request.user)
         if basket:
             context['basket'] = basket
-            context['basket_sum'] = basket[0].total_cost()
         return context
