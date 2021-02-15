@@ -22,6 +22,12 @@ html, body {
 	min-height: 100%;
 }
 
+.admin_container {
+	width: 1366px;
+	margin: 0 auto;
+	min-height: 100%;
+}
+
 .slider {
 	height: 800px;
 	background-image: url(/static/img/slider.jpg);
@@ -839,6 +845,16 @@ td:first-child {
 	display: block;
 }
 
+.product_img {
+	width: 368px;
+	height: 368px;
+}
+
+.admin_product_img img {
+	width: 50px;
+	height: 50px;
+}
+
 .loading {
 	text-align: center;
 	margin-bottom: 140px;
@@ -1091,4 +1107,42 @@ input.product_quantity::-webkit-outer-spin-button,
 input.product_quantity::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+.category_record.not_active {
+	opacity: 0.5;
+}
+
+.admin_users_avatar img {
+	width: 50px;
+	height: 50px;
+}
+
+.user-edit a {
+	width: 120px;
+}
+
+.user-edit button {
+	width: 120px;
+}
+
+.user-deactivate {
+	margin-top: 5px;
+}
+
+.user-deactivate a {
+	width: 120px;
+}
+
+.user-activate {
+	margin-top: 5px;
+}
+
+.user-activate a {
+	width: 120px;
+}
+
+.warning {
+	color: red;
+	border: 1px;
 }

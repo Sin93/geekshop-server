@@ -13,6 +13,7 @@ urlpatterns = [
     path('contact/', mainapp.contact, name='contact'),
     path('auth/', include('authapp.urls', namespace='auth')),
     path('admin/', admin.site.urls),
+    path('admin-staff/', include('adminapp.urls', namespace='admin_staff')),
     path('basket/', include('basketapp.urls', namespace='basket')),
 ]
 
