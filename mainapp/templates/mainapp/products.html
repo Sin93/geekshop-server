@@ -1,5 +1,6 @@
 {% extends 'mainapp/base.html' %}
 {% load staticfiles %}
+{% load project_tags %}
 
 {% block title %}
 {{ title|title }}
@@ -57,20 +58,65 @@
 		</div>
 	</div>
 
+
+
 	<div class="related">
 		<div class="title clearfix">
 			<h2>Похожие продукты</h2>
 			<a class="explore" href="{% url 'mainapp:all_products' %}">показать все <img src="{% static 'img/arrow.png' %}" alt=""></a>
 		</div>
+
+		{% if products.paginator.num_pages > 1 %}
+		<nav aria-label="...">
+			<ul class="pagination justify-content-center">
+				<li class="page-item {% if not products.has_previous %}disabled{% endif %}">
+					<a class="page-link" href="
+					{% if not products.has_previous %}
+						#
+					{% else %}
+						{% if category_url %}
+							{% url 'mainapp:category_page' category_url.url products.previous_page_number %}
+						{% else %}
+							{% url 'mainapp:page' products.previous_page_number %}
+						{% endif %}
+					{% endif %}" tabindex="-1">Предыдущая</a>
+				</li>
+
+				{% for page in products.paginator.page_range %}
+					<li class="page-item {% if page == current_page %}active{% endif %}">
+						<a class="page-link" href="
+							{% if category_url %}
+								{% url 'mainapp:category_page' category_url.url page %}
+							{% else %}
+								{% url 'mainapp:page' page %}
+							{% endif %}">
+							{{ page }}
+							{% if page == current_page %}<span class="sr-only">(current)</span>{% endif %}
+						</a>
+					</li>
+				{% endfor %}
+
+				<li class="page-item {% if not products.has_next %}disabled{% endif %}">
+					<a class="page-link" href="
+					{% if not products.has_next %}
+						#
+					{% else %}
+						{% if category_url %}
+							{% url 'mainapp:category_page' category_url.url products.next_page_number %}
+						{% else %}
+							{% url 'mainapp:page' products.next_page_number %}
+						{% endif %}
+					{% endif %}">Следующая</a>
+				</li>
+			</ul>
+		</nav>
+		{% endif %}
+
 		<div class="related-products clearfix">
 			{% for product in products %}
 				<div class="block">
 					<a href="{% url 'basketapp:add' product.pk %}">
-						{% if not product.image %}
-						<img class="product_img" src="{% static 'img/default_product_img.jpg' %}" alt="">
-						{% else %}
-						<img class="product_img" src="{{ product.image }}" alt="">
-						{% endif %}
+						<img class="product_img" src="{{ product.image|media_folder_products }}" alt="">
 
 						<div class="text">
 							<img src="{% static 'img/icon-hover.png' %}" alt="img">

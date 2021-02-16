@@ -54,7 +54,7 @@
           <td><a class="btn btn-primary btn-sm" href="{% url 'admin_staff:all_products' %}" role="button">К товарам</a></td>
           <td></td>
         </tr>
-        {% for object in objects %}
+        {% for object in object_list %}
           <tr {% if not object.category.is_active %}class="table-danger"{% endif %}>
             <td>{{ object.category.name }}</td>
             <td>{{ object.category.description }}</td>
@@ -70,13 +70,19 @@
                 </button>
               </div>
               {% if object.category.is_active %}
-                <div class="user-deactivate">
-                  <a class="btn btn-danger btn-sm" href="{% url 'admin_staff:category_change_active' object.category.pk %}" role="button">Деактивировать</a>
-                </div>
+              <div class="user-edit">
+                <form action="{% url 'admin_staff:category_change_active' object.category.pk %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger btn-sm" name="button">Деактивировать</button>
+                </form>
+              </div>
               {% else %}
-                <div class="user-activate">
-                  <a class="btn btn-warning btn-sm" href="{% url 'admin_staff:category_change_active' object.category.pk %}" role="button">Активировать</a>
-                </div>
+              <div class="user-edit">
+                <form action="{% url 'admin_staff:category_change_active' object.category.pk %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-success btn-sm" name="button">Активировать</button>
+                </form>
+              </div>
               {% endif %}
             </td>
           </tr>
