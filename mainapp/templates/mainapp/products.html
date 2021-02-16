@@ -1,5 +1,6 @@
 {% extends 'mainapp/base.html' %}
 {% load staticfiles %}
+{% load project_tags %}
 
 {% block title %}
 {{ title|title }}
@@ -115,11 +116,7 @@
 			{% for product in products %}
 				<div class="block">
 					<a href="{% url 'basketapp:add' product.pk %}">
-						{% if not product.image %}
-						<img class="product_img" src="{% static 'img/default_product_img.jpg' %}" alt="">
-						{% else %}
-						<img class="product_img" src="/media/{{ product.image }}" alt="">
-						{% endif %}
+						<img class="product_img" src="{{ product.image|media_folder_products }}" alt="">
 
 						<div class="text">
 							<img src="{% static 'img/icon-hover.png' %}" alt="img">

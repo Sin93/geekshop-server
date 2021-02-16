@@ -39,7 +39,6 @@ def products(request, category=None, page=1):
     except EmptyPage:
         products_paginator = paginator.page(paginator.num_pages)
 
-    print(page)
     context = {
         'title': 'каталог',
         'category_url': category,
@@ -60,6 +59,7 @@ def view_product(request, id):
         'data': product
     }
     return render(request, 'mainapp/product.html', context)
+
 
 def contact(request):
     with open(os.path.join(THIS_DIR, 'mainapp', 'fixtures', 'contacts.json'), 'r') as read_file:

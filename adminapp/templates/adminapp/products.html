@@ -1,5 +1,6 @@
 {% extends 'adminapp/base.html' %}
 {% load staticfiles %}
+{% load project_tags %}
 
 {% block content %}
   <div class="products_list">
@@ -57,13 +58,10 @@
             <td>{{ object.product.pk }}</td>
             <td>{{ object.product.name }}</td>
             <td>{{ object.product.short_desc }}</td>
-            <td class="admin_product_img"><img src="
-              {% if object.product.image %}
-                /media/{{ object.product.image }}
-              {% else %}
-                {% static "img/default_product_img.jpg" %}
-              {% endif %}"
-              alt="{{ object.product.name }}"></td>
+            <td class="admin_product_img">
+              <img src="{{ object.product.image|media_folder_products }}"
+                alt="{{ object.product.name }}">
+            </td>
             <td>{{ object.product.price }}</td>
             <td>{{ object.product.quantity }}</td>
             <td>{% if object.product.category %}{{ object.product.category.name }}{% else %}нет{% endif %}</td>

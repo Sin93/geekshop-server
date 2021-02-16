@@ -1,7 +1,10 @@
 # Django
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404, render, HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.list import ListView
 # Project
 from authapp.forms import ShopUserRegisterForm
 from authapp.models import ShopUser
@@ -9,142 +12,118 @@ from adminapp.forms import ShopUserAdminEditForm, ProductCategoryEditForm, Produ
 from mainapp.models import Product, ProductCategory
 
 
-@user_passes_test(lambda u: u.is_superuser)
-def user_create(request):
-    title = 'admin - новый пользователь'
+class CheckStaffMixine:
+    """Добавлена проверка на принадлежность к персоналу, для метода dispatch.
+    dispatch - метод базового класса View для всех CBV."""
 
-    if request.method == 'POST':
-        user_form = ShopUserRegisterForm(request.POST, request.FILES)
-        if user_form.is_valid():
-            user_form.save()
-            return HttpResponseRedirect(reverse('admin_staff:users'))
-    else:
-        user_form = ShopUserRegisterForm()
-
-    content = {'title': title, 'update_form': user_form}
-
-    return render(request, 'adminapp/user_update.html', content)
-
-
-@user_passes_test(lambda u: u.is_superuser)
-def users(request):
-    title = 'admin - пользователи'
-
-    users_list = ShopUser.objects.all().order_by(
-        '-is_active',
-        '-is_superuser',
-        '-is_staff',
-        'username'
-    )
-
-    content = {
-        'title': title,
-        'objects': users_list
-    }
-
-    return render(request, 'adminapp/users.html', content)
-
-
-@user_passes_test(lambda u: u.is_superuser)
-def user_update(request, pk):
-    title = 'пользователи/редактирование'
-
-    edit_user = get_object_or_404(ShopUser, pk=pk)
-    if request.method == 'POST':
-        edit_form = ShopUserAdminEditForm(request.POST, request.FILES,\
-                                                        instance=edit_user)
-        if edit_form.is_valid():
-            edit_form.save()
-            return HttpResponseRedirect(reverse('admin_staff:users'))
-    else:
-        edit_form = ShopUserAdminEditForm(instance=edit_user)
-
-    content = {'title': title, 'update_form': edit_form}
-
-    return render(request, 'adminapp/user_update.html', content)
-
-
-@user_passes_test(lambda u: u.is_superuser)
-def user_change_active(request, pk):
-
-    target_user = get_object_or_404(ShopUser, pk=pk)
-    target_user.is_active = False if target_user.is_active else True
-    target_user.save()
-
-    return HttpResponseRedirect(reverse('admin_staff:users'))
-
-
-@user_passes_test(lambda u: u.is_superuser)
-def category_create(request):
-    if request.method == 'POST':
-        edit_form = ProductCategoryEditForm(data=request.POST)
-        if edit_form.is_valid():
-            edit_form.save()
-            return HttpResponseRedirect(reverse('admin_staff:categories'))
+    @method_decorator(user_passes_test(lambda u: u.is_superuser or u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        if request.method.lower() in self.http_method_names:
+            handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
         else:
-            return HttpResponseRedirect(reverse('admin_staff:categories'))
+            handler = self.http_method_not_allowed
+        return handler(request, *args, **kwargs)
 
 
-@user_passes_test(lambda u: u.is_superuser)
-def categories(request):
-    title = 'admin - категории'
+class UcersListView(CheckStaffMixine, ListView):
+    model = ShopUser
+    template_name = 'adminapp/users.html'
 
-    categories_list = ProductCategory.objects.all()
-    categories_and_forms = []
-    for category in categories_list:
-        categories_and_forms.append({'category': category, 'form': ProductCategoryEditForm(instance=category)})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'admin - пользователи'
 
-    content = {
-        'title': title,
-        'objects': categories_and_forms,
-        'new_category': ProductCategoryEditForm
-    }
+        return context
 
-    return render(request, 'adminapp/categories.html', content)
-
-
-@user_passes_test(lambda u: u.is_superuser)
-def category_update(request, pk):
-    category = ProductCategory.objects.get(pk=pk)
-    if request.method == 'POST':
-        edit_form = ProductCategoryEditForm(data=request.POST, instance=category)
-        if edit_form.is_valid():
-            edit_form.save()
-            return HttpResponseRedirect(reverse('admin_staff:categories'))
-        else:
-            return HttpResponseRedirect(reverse('admin_staff:categories'))
+    def get_queryset(self):
+        return ShopUser.objects.all().order_by(
+            '-is_active',
+            '-is_superuser',
+            '-is_staff',
+            'username'
+        )
 
 
-@user_passes_test(lambda u: u.is_superuser)
-def category_change_active(request, pk):
-    target_category = get_object_or_404(ProductCategory, pk=pk)
+class UserCreateView(CheckStaffMixine, CreateView):
+    model = ShopUser
+    form_class = ShopUserAdminEditForm
+    template_name = 'adminapp/user_update.html'
+    success_url = reverse_lazy('admin_staff:users')
 
-    if target_category.is_active:
-        target_category.is_active = False
-        target_category.save()
-        products_in_this_category = Product.objects.filter(category=target_category)
 
-        if products_in_this_category:
+class UserUpdateView(CheckStaffMixine, UpdateView):
+    model = ShopUser
+    form_class = ShopUserAdminEditForm
+    template_name = 'adminapp/user_update.html'
+    success_url = reverse_lazy('admin_staff:users')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'пользователи/редактирование'
+
+        return context
+
+
+class UserChangeActiveView(CheckStaffMixine, DeleteView):
+    model = ShopUser
+    success_url = reverse_lazy('admin_staff:users')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.is_active = False if self.object.is_active else True
+        self.object.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class CategoriesView(CheckStaffMixine, ListView):
+    model = ProductCategory
+    template_name = 'adminapp/categories.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'admin - категории'
+        object_list = context['object_list']
+
+        categories_and_forms = []
+        for category in object_list:
+            categories_and_forms.append({'category': category, 'form': ProductCategoryEditForm(instance=category)})
+
+        context['object_list'] = categories_and_forms
+
+        context['new_category'] = ProductCategoryEditForm
+
+        return context
+
+
+class CategoryCreateView(CheckStaffMixine, CreateView):
+    model = ProductCategory
+    form_class = ProductCategoryEditForm
+    success_url = reverse_lazy('admin_staff:categories')
+
+
+class CategoryUpdateView(CheckStaffMixine, UpdateView):
+    model = ProductCategory
+    form_class = ProductCategoryEditForm
+    success_url = reverse_lazy('admin_staff:categories')
+
+
+class CategoryChangeActiveView(CheckStaffMixine, DeleteView):
+    model = ProductCategory
+    success_url = reverse_lazy('admin_staff:categories')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.is_active = False if self.object.is_active else True
+        self.object.save()
+
+        if not self.object.is_active:
+            products_in_this_category = Product.objects.filter(category=self.object)
             for product in products_in_this_category:
                 product.is_active = False
                 product.save()
 
-    else:
-        target_category.is_active = True
-        target_category.save()
-
-    return HttpResponseRedirect(reverse('admin_staff:categories'))
-
-
-@user_passes_test(lambda u: u.is_superuser)
-def product_create(request):
-    if request.method == 'POST':
-        edit_form = ProductAdminForm(data=request.POST, files=request.FILES)
-        if edit_form.is_valid():
-            edit_form.save()
-            return HttpResponseRedirect(reverse('admin_staff:categories'))
-        else:
-            return HttpResponseRedirect(reverse('admin_staff:categories'))
+        return HttpResponseRedirect(self.get_success_url())
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -175,6 +154,17 @@ def products(request, category=None):
     content['new_product'] = ProductAdminForm()
 
     return render(request, 'adminapp/products.html', content)
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def product_create(request):
+    if request.method == 'POST':
+        edit_form = ProductAdminForm(data=request.POST, files=request.FILES)
+        if edit_form.is_valid():
+            edit_form.save()
+            return HttpResponseRedirect(reverse('admin_staff:categories'))
+        else:
+            return HttpResponseRedirect(reverse('admin_staff:categories'))
 
 
 @user_passes_test(lambda u: u.is_superuser)
