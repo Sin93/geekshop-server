@@ -10,4 +10,5 @@ urlpatterns = [
         path('logout/', auth.logout, name='logout'),
         path('register/', auth.register, name='register'),
         path('edit/', auth.edit, name='edit'),
+        path('verify/<int:user_id>/<hash>', auth.verify, name='verify')
     ]

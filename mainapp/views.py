@@ -9,18 +9,30 @@ import json
 
 THIS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-def main(request):
+MESSAGES = {
+    'successful_register': 'Вы успешно зарегистрировались. На вашу почту отправлено письмо со ссылкой для подтверждения регистрации.',
+    'successful_verify': 'E-mail подтверждён, регистрация успешно завершена.'
+}
+
+
+def main(request, message=None):
     context = {
         'title': 'магазин'
     }
+
     context = add_basket_in_context(request, context)
+
+    if message:
+        context['message'] = MESSAGES[message]
+
+    print(context['title'])
     return render(request, 'mainapp/index.html', context)
 
 
 def products(request, category=None, page=1):
-    '''В данном проекте сделано таким образом, что товар не может быть активен,
+    """В данном проекте сделано таким образом, что товар не может быть активен,
     если деактивирована категория. По этому проверку на активность категории
-    не делаю'''
+    не делаю"""
     if not category:
         products = Product.objects.filter(is_active=True).order_by('price')
     else:
@@ -79,4 +91,5 @@ def add_basket_in_context(request, context):
         basket = Basket.objects.filter(user=request.user)
         if basket:
             context['basket'] = basket
-        return context
+
+    return context

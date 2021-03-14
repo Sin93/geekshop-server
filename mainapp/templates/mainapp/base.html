@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,7 +10,7 @@
   </title>
 
   {% block css %}
-		<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
   	<link rel="stylesheet" href="{% static 'fonts/font-awesome/css/font-awesome.css' %}">
   {% endblock %}
@@ -55,5 +55,8 @@
 	    <p class="small">Положения &amp; Условия  /  Конфиденциальность &amp; Cookies</p>
 	</div>
 
+  {% block js %}
+
+  {% endblock %}
 </body>
 </html>
