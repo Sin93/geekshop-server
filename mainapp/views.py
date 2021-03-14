@@ -1,7 +1,6 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, get_object_or_404
 from mainapp.models import ProductCategory, Product
-from basketapp.models import Basket
 
 import os
 import json
@@ -20,12 +19,10 @@ def main(request, message=None):
         'title': 'магазин'
     }
 
-    context = add_basket_in_context(request, context)
-
     if message:
+        print('Сообщение:' + message)
         context['message'] = MESSAGES[message]
 
-    print(context['title'])
     return render(request, 'mainapp/index.html', context)
 
 
@@ -59,8 +56,6 @@ def products(request, category=None, page=1):
         'current_page': page,
     }
 
-    context = add_basket_in_context(request, context)
-
     return render(request, 'mainapp/products.html', context)
 
 
@@ -81,15 +76,5 @@ def contact(request):
         'title': 'Контакты',
         'contacts': contacts_list,
     }
-    context = add_basket_in_context(request, context)
 
     return render(request, 'mainapp/contact.html', context)
-
-
-def add_basket_in_context(request, context):
-    if request.user.is_authenticated:
-        basket = Basket.objects.filter(user=request.user)
-        if basket:
-            context['basket'] = basket
-
-    return context
