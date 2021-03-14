@@ -20,7 +20,6 @@ def main(request, message=None):
     }
 
     if message:
-        print('Сообщение:' + message)
         context['message'] = MESSAGES[message]
 
     return render(request, 'mainapp/index.html', context)

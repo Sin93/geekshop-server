@@ -2,6 +2,10 @@
 {% load static %}
 {% load project_tags %}
 
+{% block title %}
+  {{ title }}
+{% endblock %}
+
 {% block content %}
   <div class="products_list">
     <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#new_product">
@@ -18,7 +22,13 @@
             </button>
           </div>
           <div class="modal-body">
-            <form class="form-horizontal" method="post" enctype="multipart/form-data" action="{% url 'admin_staff:product_create' %}">
+            <form class="form-horizontal" method="post" enctype="multipart/form-data"
+                  {% if category %}
+                    action="{% url 'admin_staff:product_create_in_category' category.url %}
+                  {% else %}
+                    action="{% url 'admin_staff:product_create' %}
+                  {% endif %}
+">
               {% csrf_token %}
               {{ new_product.as_p }}
               <input class="form-control" type="submit" value="сохранить">
@@ -53,45 +63,51 @@
         </tr>
       </thead>
       <tbody>
-        {% for object in objects %}
-          <tr {% if not object.product.is_active %}class="table-danger"{% endif %}>
-            <td>{{ object.product.pk }}</td>
-            <td>{{ object.product.name }}</td>
-            <td>{{ object.product.short_desc }}</td>
+        {% for object in object_list %}
+          <tr {% if not object.is_active %}class="table-danger"{% endif %}>
+            <td>{{ object.pk }}</td>
+            <td>{{ object.name }}</td>
+            <td>{{ object.short_desc }}</td>
             <td class="admin_product_img">
-              <img src="{{ object.product.image|media_folder_products }}"
-                alt="{{ object.product.name }}">
+              <img src="{{ object.image|media_folder_products }}"
+                alt="{{ object.name }}">
             </td>
-            <td>{{ object.product.price }}</td>
-            <td>{{ object.product.quantity }}</td>
-            <td>{% if object.product.category %}{{ object.product.category.name }}{% else %}нет{% endif %}</td>
+            <td>{{ object.price }}</td>
+            <td>{{ object.quantity }}</td>
+            <td>{% if object.category %}{{ object.category.name }}{% else %}нет{% endif %}</td>
             <td>
               <div class="user-edit">
-                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#product{{ object.product.pk }}">
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#product{{ object.pk }}">
                   Редактировать
                 </button>
               </div>
-              {% if object.product.is_active %}
-              <div class="user-deactivate">
-                <a class="btn btn-danger btn-sm" href="{% url 'admin_staff:product_change_active' object.product.pk %}" role="button">Деактивировать</a>
+              {% if object.is_active %}
+              <div class="user-edit">
+                <form action="{% url 'admin_staff:product_change_active' object.pk %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger btn-sm" name="button">Деактивировать</button>
+                </form>
               </div>
               {% else %}
-              <div class="user-activate">
-                <a class="btn btn-warning btn-sm" href="{% url 'admin_staff:product_change_active' object.product.pk %}" role="button">Активировать</a>
+              <div class="user-edit">
+                <form action="{% url 'admin_staff:product_change_active' object.pk %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-success btn-sm" name="button">Активировать</button>
+                </form>
               </div>
               {% endif %}
             </td>
-            <div class="modal fade bd-example-modal-lg" id="product{{ object.product.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal fade bd-example-modal-lg" id="product{{ object.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="{{ object.product.pk }}">Редактирование товара: {{ object.product.name }}</h5>
+                    <h5 class="modal-title" id="{{ object.pk }}">Редактирование товара: {{ object.name }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
                   <div class="modal-body">
-                    <form class="form-horizontal" method="post" enctype="multipart/form-data" action="{% url 'admin_staff:product_update' object.product.pk %}">
+                    <form class="form-horizontal" method="post" enctype="multipart/form-data" action="{% url 'admin_staff:product_update' object.pk %}">
                       {% csrf_token %}
                       {{ object.form.as_p }}
                       <input class="form-control" type="submit" value="сохранить">
