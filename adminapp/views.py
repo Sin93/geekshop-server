@@ -1,7 +1,7 @@
 # Django
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404, render, HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic.base import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -19,6 +19,12 @@ class GeekShopMixin(View):
     def get_category(self):
         try:
             return get_object_or_404(ProductCategory, url=self.kwargs['category'])
+        except KeyError:
+            return None
+
+    def get_product(self):
+        try:
+            return get_object_or_404(Product, pk=self.kwargs['pk'])
         except KeyError:
             return None
 
@@ -75,9 +81,9 @@ class UserChangeActiveView(GeekShopMixin, DeleteView):
     success_url = reverse_lazy('admin_staff:users')
 
     def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.is_active = False if self.object.is_active else True
-        self.object.save()
+        user = self.get_object()
+        user.is_active = False if user.is_active else True
+        user.save()
 
         return HttpResponseRedirect(self.get_success_url())
 
@@ -125,9 +131,9 @@ class CategoryChangeActiveView(GeekShopMixin, DeleteView):
     success_url = reverse_lazy('admin_staff:categories')
 
     def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.is_active = False if self.object.is_active else True
-        self.object.save()
+        category = self.get_object()
+        category.is_active = False if category.is_active else True
+        category.save()
 
         if not self.object.is_active:
             products_in_this_category = Product.objects.filter(category=self.object)
@@ -189,29 +195,68 @@ class ProductUpdateView(GeekShopMixin, UpdateView):
         return self.request.META.get('HTTP_REFERER')
 
 
-class ProductChangeActiveView(GeekShopMixin, DeleteView):
-    model = Product
-    success_url = reverse_lazy('admin_staff:all_products')
-    template_name = None
-    warning = None
-
-    def delete(self, request, *args, **kwargs):
-        product = self.get_object()
-        if product.category.is_active:
-            product.is_active = False if product.is_active else True
-            product.save()
+@user_passes_test(lambda u: u.is_superuser)
+def product_change_active(request, pk):
+    """Контроллер для активации/деактивации товара.
+    с помощью CBV пока не смог добиться необходимого уровня кастомизации"""
+    target_product = get_object_or_404(Product, pk=pk)
+    if target_product.category.is_active:
+        if target_product.is_active:
+            target_product.is_active = False
         else:
-            self.warning = f'Категория товара "{product.name}": "{product.category.name}" - деактивирована, ' +\
-                'нельзя активировать товар в неактивной категории. Для активации товара измените его категорию.'
+            target_product.is_active = True
 
-        return HttpResponseRedirect(self.get_success_url())
+        target_product.save()
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.warning:
-            context['warning'] = self.warning
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    else:
+        warning = f'Категория товара "{target_product.name}": "{target_product.category.name}" - деактивирована, ' \
+                  f'нельзя активировать товар в неактивной категории. Для активации товара измените его категорию.'
 
-        return context
+        content = {
+            'title': 'admin - товары',
+            'warning': warning
+        }
 
-    def get_success_url(self):
-        return self.request.META.get('HTTP_REFERER')
+        if request.META.get('HTTP_REFERER').split('/')[-2] != 'category':
+            category = request.META.get('HTTP_REFERER').split('/')[-2]
+            target_category = get_object_or_404(ProductCategory, url=category)
+            content['category'] = target_category
+            products = Product.objects.filter(category=target_category).order_by('name')
+        else:
+            products = Product.objects.all().order_by('-is_active', 'category__name')
+
+        for product in products:
+            setattr(product, 'form', ProductAdminForm(instance=product))
+
+        content['object_list'] = products
+
+        return render(request, 'adminapp/products.html', content)
+
+
+# class ProductChangeActiveView(GeekShopMixin, DeleteView):
+#     model = Product
+#     success_url = reverse_lazy('admin_staff:all_products')
+#     template_name = None
+#     warning = None
+#
+#     def delete(self, request, *args, **kwargs):
+#         product = self.get_object()
+#         if product.category.is_active:
+#             product.is_active = False if product.is_active else True
+#             product.save()
+#         else:
+#             self.warning = f'Категория товара "{product.name}": "{product.category.name}" - деактивирована, ' +\
+#                 'нельзя активировать товар в неактивной категории. Для активации товара измените его категорию.'
+#
+#         return HttpResponseRedirect(self.get_success_url())
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         if self.warning:
+#             context['warning'] = self.warning
+#
+#         return context
+#
+#     def get_success_url(self):
+#         return self.request.META.get('HTTP_REFERER')
