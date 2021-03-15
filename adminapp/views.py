@@ -131,9 +131,9 @@ class CategoryChangeActiveView(GeekShopMixin, DeleteView):
     success_url = reverse_lazy('admin_staff:categories')
 
     def delete(self, request, *args, **kwargs):
-        category = self.get_object()
-        category.is_active = False if category.is_active else True
-        category.save()
+        self.object = self.get_object()
+        self.object.is_active = False if self.object.is_active else True
+        self.object.save()
 
         if not self.object.is_active:
             products_in_this_category = Product.objects.filter(category=self.object)
@@ -178,6 +178,7 @@ class ProductListView(GeekShopMixin, ListView):
 
 
 class ProductCreateView(GeekShopMixin, CreateView):
+    """Контроллер для создания товара"""
     model = Product
     form_class = ProductAdminForm
     success_url = reverse_lazy('admin_staff:all_products')
@@ -187,6 +188,7 @@ class ProductCreateView(GeekShopMixin, CreateView):
 
 
 class ProductUpdateView(GeekShopMixin, UpdateView):
+    """Контроллер для изменения товара"""
     model = Product
     form_class = ProductAdminForm
     success_url = reverse_lazy('admin_staff:all_products')
@@ -195,68 +197,51 @@ class ProductUpdateView(GeekShopMixin, UpdateView):
         return self.request.META.get('HTTP_REFERER')
 
 
-@user_passes_test(lambda u: u.is_superuser)
-def product_change_active(request, pk):
-    """Контроллер для активации/деактивации товара.
-    с помощью CBV пока не смог добиться необходимого уровня кастомизации"""
-    target_product = get_object_or_404(Product, pk=pk)
-    if target_product.category.is_active:
-        if target_product.is_active:
-            target_product.is_active = False
-        else:
-            target_product.is_active = True
+class ProductChangeActive(GeekShopMixin):
+    """Контроллер для активации/деактивации товара"""
 
-        target_product.save()
+    @staticmethod
+    def get_context_data(request, warning=None):
+        context = {}
 
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    else:
-        warning = f'Категория товара "{target_product.name}": "{target_product.category.name}" - деактивирована, ' \
-                  f'нельзя активировать товар в неактивной категории. Для активации товара измените его категорию.'
-
-        content = {
-            'title': 'admin - товары',
-            'warning': warning
-        }
-
+        # Если указана категория, то будем выводить товары категории, в противном случае выведем всё
         if request.META.get('HTTP_REFERER').split('/')[-2] != 'category':
             category = request.META.get('HTTP_REFERER').split('/')[-2]
             target_category = get_object_or_404(ProductCategory, url=category)
-            content['category'] = target_category
+            context['title'] = f'admin - товары({target_category.name})'
+            context['category'] = target_category
             products = Product.objects.filter(category=target_category).order_by('name')
         else:
             products = Product.objects.all().order_by('-is_active', 'category__name')
+            context['title'] = 'admin - все товары'
 
+        # Каждому товару добавляем в атрибуты форму для изменения
         for product in products:
             setattr(product, 'form', ProductAdminForm(instance=product))
 
-        content['object_list'] = products
+        context['object_list'] = products
+        context['new_product'] = ProductAdminForm()  # форма для нового товара
 
-        return render(request, 'adminapp/products.html', content)
+        # если есть предупреждение, то выводим его
+        if warning:
+            context['warning'] = warning
 
+        return context
 
-# class ProductChangeActiveView(GeekShopMixin, DeleteView):
-#     model = Product
-#     success_url = reverse_lazy('admin_staff:all_products')
-#     template_name = None
-#     warning = None
-#
-#     def delete(self, request, *args, **kwargs):
-#         product = self.get_object()
-#         if product.category.is_active:
-#             product.is_active = False if product.is_active else True
-#             product.save()
-#         else:
-#             self.warning = f'Категория товара "{product.name}": "{product.category.name}" - деактивирована, ' +\
-#                 'нельзя активировать товар в неактивной категории. Для активации товара измените его категорию.'
-#
-#         return HttpResponseRedirect(self.get_success_url())
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         if self.warning:
-#             context['warning'] = self.warning
-#
-#         return context
-#
-#     def get_success_url(self):
-#         return self.request.META.get('HTTP_REFERER')
+    def post(self, request, pk):
+        target_product = get_object_or_404(Product, pk=pk)
+
+        # Проверяем активна ли категория в которой находится товар
+        if target_product.category.is_active:
+            target_product.is_active = False if target_product.is_active else True
+            target_product.save()
+
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            # Если категория не активна, то надо вывести предупреждение
+            warning = f'Категория товара "{target_product.name}": "{target_product.category.name}" - деактивирована, ' \
+                      f'нельзя активировать товар в неактивной категории. Для активации товара измените его категорию.'
+            context = self.get_context_data(request, warning)
+
+            return render(request, 'adminapp/products.html', context)
+

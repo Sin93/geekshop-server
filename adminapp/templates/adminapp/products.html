@@ -81,13 +81,19 @@
                   Редактировать
                 </button>
               </div>
-              {% if object.product.is_active %}
-              <div class="user-deactivate">
-                <a class="btn btn-danger btn-sm" href="{% url 'admin_staff:product_change_active' object.pk %}" role="button">Деактивировать</a>
+              {% if object.is_active %}
+              <div class="user-edit">
+                <form action="{% url 'admin_staff:product_change_active' object.pk %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger btn-sm" name="button">Деактивировать</button>
+                </form>
               </div>
               {% else %}
-              <div class="user-activate">
-                <a class="btn btn-warning btn-sm" href="{% url 'admin_staff:product_change_active' object.pk %}" role="button">Активировать</a>
+              <div class="user-edit">
+                <form action="{% url 'admin_staff:product_change_active' object.pk %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-success btn-sm" name="button">Активировать</button>
+                </form>
               </div>
               {% endif %}
             </td>
