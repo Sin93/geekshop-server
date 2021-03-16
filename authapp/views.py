@@ -1,10 +1,13 @@
-from authapp.forms import ShopUserLoginForm, ShopUserRegisterForm, ShopUserEditForm
-from authapp.models import ShopUser
+# Django
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.http import Http404
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
+# Project
+from authapp.forms import ShopUserLoginForm, ShopUserRegisterForm, ShopUserEditForm, ShopUserProfileEditForm
+from authapp.models import ShopUser
 from authapp.utils import send_verify_email
 
 
@@ -66,18 +69,22 @@ def register(request):
 
 
 @login_required
+@transaction.atomic
 def edit(request):
     if request.method == 'POST':
         edit_form = ShopUserEditForm(data=request.POST, files=request.FILES, instance=request.user)
-        if edit_form.is_valid():
+        edit_profile_form = ShopUserProfileEditForm(data=request.POST, instance=request.user.profile)
+        if edit_form.is_valid() and edit_profile_form.is_valid():
             edit_form.save()
             return HttpResponseRedirect(reverse('main'))
     else:
         edit_form = ShopUserEditForm(instance=request.user)
+        edit_profile_form = ShopUserProfileEditForm(instance=request.user.profile)
 
     content = {
         'title': 'редактирование',
-        'edit_form': edit_form
+        'edit_form': edit_form,
+        'profile_form': edit_profile_form,
     }
 
     return render(request, 'authapp/edit.html', content)
