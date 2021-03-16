@@ -1,5 +1,6 @@
 {% extends 'authapp/base.html' %}
 {% load static %}
+{% load project_tags %}
 
 
 {% block content %}
@@ -16,5 +17,7 @@
           на главную
       </a>
   </button>
-  <div class="user_avatar"><img src="/media/{{ user.avatar }}"></div>
+  <div class="user_avatar">
+    <img src="{{ user.avatar|media_folder_users }}" alt="{{ user.name }}">
+  </div>
 {% endblock %}

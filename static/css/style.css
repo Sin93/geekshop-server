@@ -1149,3 +1149,8 @@ input.product_quantity::-webkit-inner-spin-button {
 	color: red;
 	border: 1px;
 }
+
+.user_avatar img {
+	max-width: 400px;
+	max-height: 400px;
+}

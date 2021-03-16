@@ -15,6 +15,7 @@ urlpatterns = [
     path('products/', include('mainapp.urls', namespace='mainapp')),
     path('contact/', mainapp.contact, name='contact'),
     path('auth/', include('authapp.urls', namespace='auth')),
+    path('social/', include('social_django.urls', namespace='social')),
     path('admin/', admin.site.urls),
     path('admin-staff/', include('adminapp.urls', namespace='admin_staff')),
     path('basket/', include('basketapp.urls', namespace='basket')),
