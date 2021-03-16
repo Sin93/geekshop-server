@@ -10,6 +10,7 @@ from mainapp.models import Product
 
 
 class BasketView(View):
+    """Контроллер для отображения корзины пользователя"""
     title = 'корзина'
     template_name = 'basketapp/basket.html'
     model = Basket
@@ -29,6 +30,7 @@ class BasketView(View):
 
 
 class BasketAddView(View):
+    """Контроллер для добавления товаров в корзину пользователя"""
     model = Basket
 
     @method_decorator(login_required())
@@ -45,6 +47,7 @@ class BasketAddView(View):
 
 
 class BasketRemoveView(View):
+    """Контроллер для удаления товаров из корзины пользователя"""
     @method_decorator(login_required())
     def get(self, request, pk):
         basket_record = get_object_or_404(Basket, pk=pk)
@@ -53,6 +56,8 @@ class BasketRemoveView(View):
 
 
 class BasketEditView(View):
+    """Контроллер для изменения количества товаров в корзине пользователя.
+    Получает запросы от JS, код размещён в static/js/basket.js"""
     def get_result(self, pk, quantity):
         result = {
             'result': quantity,

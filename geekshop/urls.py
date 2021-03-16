@@ -9,12 +9,12 @@ import mainapp.views as mainapp
 
 
 urlpatterns = [
-    path('', mainapp.main, name='main'),
+    path('', mainapp.MainView.as_view(), name='main'),
     path('', include('social_django.urls', namespace='social')),
-    path('index/<str:message>', mainapp.main, name='main_with_msg'),
-    path('product/<int:id>', mainapp.view_product, name='product'),
+    path('index/<str:message>', mainapp.MainView.as_view(), name='main_with_msg'),
+    path('product/<int:pk>', mainapp.ProductView.as_view(), name='product'),
     path('products/', include('mainapp.urls', namespace='mainapp')),
-    path('contact/', mainapp.contact, name='contact'),
+    path('contact/', mainapp.ContactsView.as_view(), name='contact'),
     path('auth/', include('authapp.urls', namespace='auth')),
     path('admin/', admin.site.urls),
     path('admin-staff/', include('adminapp.urls', namespace='admin_staff')),
