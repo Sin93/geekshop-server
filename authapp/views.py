@@ -1,8 +1,24 @@
-from django.shortcuts import render, HttpResponseRedirect
 from authapp.forms import ShopUserLoginForm, ShopUserRegisterForm, ShopUserEditForm
-from django.contrib import auth, messages
+from authapp.models import ShopUser
+from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
+from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
+from authapp.utils import send_verify_email
+
+
+def verify(request, user_id, hash):
+    user = ShopUser.objects.get(pk=user_id)
+
+    if user.activation_key == hash and not user.is_activation_key_expired():
+        user.is_active = True
+        user.activation_key = None
+        user.save()
+        auth.login(request, user)
+        return HttpResponseRedirect(reverse('main_with_msg', args=['successful_verify']))
+
+    return Http404()
 
 
 def login(request):
@@ -35,8 +51,9 @@ def register(request):
         register_form = ShopUserRegisterForm(data=request.POST, files=request.FILES)
 
         if register_form.is_valid():
-            register_form.save()
-            return HttpResponseRedirect(reverse('auth:login'))
+            user = register_form.save()
+            send_verify_email(user)
+            return HttpResponseRedirect(reverse('main_with_msg', args=['successful_register']))
     else:
         register_form = ShopUserRegisterForm()
 
@@ -46,6 +63,7 @@ def register(request):
     }
 
     return render(request, 'authapp/register.html', content)
+
 
 @login_required
 def edit(request):

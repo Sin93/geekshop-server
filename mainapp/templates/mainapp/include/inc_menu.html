@@ -3,12 +3,12 @@
   <ul class="menu">
     <li>
       <a href="{% url 'main' %}" {% if request.resolver_match.url_name == "main" %}class="active"{% endif %}>
-        домой
+        главная
       </a>
     </li>
     <li>
       <a href="{% url 'mainapp:all_products' %}" {% if request.resolver_match.url_name == "all_products" or request.resolver_match.url_name == "category" %}class="active"{% endif %}>
-        продукты
+        товары
       </a>
     </li>
     <li>
@@ -44,8 +44,6 @@
       {% else %}
         Ваша корзина пуста
       {% endif %}
-
     </span>
   </a>
-  <a href="#" class="search"></a>
 </div>
