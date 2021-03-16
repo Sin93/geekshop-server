@@ -35,6 +35,13 @@ class ShopUserRegisterForm(UserCreationForm):
 
         return first_name
 
+    def clean_age(self):
+        age = self.cleaned_data['age']
+        if int(age) < 18:
+            raise forms.ValidationError("Ты слишком зелен!")
+
+        return age
+
     def save(self, *args, **kwargs):
         user = super(ShopUserRegisterForm, self).save()
 
@@ -86,6 +93,13 @@ class ShopUserEditForm(UserChangeForm):
             raise forms.ValidationError("слишком короткое имя пользователя!")
 
         return first_name
+
+    def clean_age(self):
+        age = self.cleaned_data['age']
+        if int(age) < 18:
+            raise forms.ValidationError("Ты слишком зелен!")
+
+        return age
 
 
 class ShopUserProfileEditForm(forms.ModelForm):

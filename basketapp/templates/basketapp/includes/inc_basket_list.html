@@ -1,24 +1,26 @@
 {% load static %}
+{% load project_tags %}
 
 {% for item in basket_items %}
   <div class="basket_record" id='{{ item.pk }}'>
-    <img src="{% if item.product.image %}{{ item.product.image }}{% else %}{% static 'img/product-11.jpg' %}{% endif %}"
-         alt="{{ item.product.short_desc }}">
-    <span class="category_name">Категория: {{ item.product.category.name }}</span>
-    <br>
-    <span class="product_name">Название: {{ item.product.name }}</span>
-    <br>
-    <span class="product_price" price='{{ item.product.price }}'>Цена: {{ item.product.price }}&nbspруб</span>
-    <br>
-    <span>Количество:
-      <span>
-        <input type='number' class='product_quantity' value='{{ item.quantity }}' id='{{ item.pk }}'>
+    <img src="{{ item.product.image|media_folder_products }}" alt="{{ item.product.name }}">
+    <div class="product_desc">
+      <span class="category_name">Категория: {{ item.product.category.name }}</span>
+      <br>
+      <span class="product_name">Название: {{ item.product.name }}</span>
+      <br>
+      <span class="product_price" price='{{ item.product.price }}'>Цена: {{ item.product.price }}&nbspруб</span>
+      <br>
+      <span>Количество:
+        <span>
+          <input type='number' class='product_quantity' value='{{ item.quantity }}' id='{{ item.pk }}'>
+        </span>
+        <i class="fa fa-plus-square-o fa-2x" name='plus' aria-hidden="true" id='{{ item.pk }}'></i>
+        <i class="fa fa-minus-square-o fa-2x" name='minus' aria-hidden="true" id='{{ item.pk }}'></i>
       </span>
-      <i class="fa fa-plus-square-o fa-2x" name='plus' aria-hidden="true" id='{{ item.pk }}'></i>
-      <i class="fa fa-minus-square-o fa-2x" name='minus' aria-hidden="true" id='{{ item.pk }}'></i>
-    </span>
-    <br>
-    <a class="btn btn-primary" href="{% url 'basket:remove' item.pk %}" role="button">Удалить</a>
+      <br>
+      <a class="btn btn-primary" href="{% url 'basket:remove' item.pk %}" role="button">Удалить</a>
+    </div>
   </div>
 {% endfor %}
 

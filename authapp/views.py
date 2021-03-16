@@ -1,11 +1,10 @@
 # Django
 from django.contrib import auth
-from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import render, HttpResponseRedirect
-from django.urls import reverse
-from django.utils.decorators import method_decorator
+from django.urls import reverse, reverse_lazy
+from django.views.generic import FormView
 from django.views.generic.base import View
 # Project
 from authapp.forms import ShopUserLoginForm, ShopUserRegisterForm, ShopUserEditForm, ShopUserProfileEditForm
@@ -30,30 +29,20 @@ class VerifyView(View):
         return Http404()
 
 
-class LoginView(View):
-    title = 'вход'
+class LoginView(FormView):
     template_name = 'authapp/login.html'
-    login_form = ShopUserLoginForm
+    form_class = ShopUserLoginForm
+    success_url = reverse_lazy('main')
 
-    def get_context_data(self):
-        context = {
-            'title': self.title,
-            'login_form': self.login_form()
-        }
-        return context
+    def form_valid(self, form):
+        username = self.request.POST['username']
+        password = self.request.POST['password']
 
-    def post(self, request):
-        if request.method == 'POST' and self.login_form(data=request.POST).is_valid():
-            username = request.POST['username']
-            password = request.POST['password']
+        user = auth.authenticate(username=username, password=password)
+        if user and user.is_active:
+            auth.login(self.request, user)
 
-            user = auth.authenticate(username=username, password=password)
-            if user and user.is_active:
-                auth.login(request, user)
-                return HttpResponseRedirect(reverse('main'))
-
-    def get(self, request):
-        return render(request, self.template_name, self.get_context_data())
+        return super().form_valid(form)
 
 
 class LogoutView(View):
@@ -64,29 +53,22 @@ class LogoutView(View):
         return HttpResponseRedirect(reverse(self.redirect_to))
 
 
-class RegisterView(View):
+class RegisterView(FormView):
     title = 'регистрация'
     template_name = 'authapp/register.html'
-    form = ShopUserRegisterForm
-    redirect_to = 'main_with_msg'
+    form_class = ShopUserRegisterForm
+    success_url = reverse_lazy('main')
     redirect_with_args = ['successful_register']
 
-    def get_context_data(self):
-        context = {
-            'title': self.title,
-            'register_form': self.form
-        }
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.title
         return context
 
-    def post(self, request):
-        register_form = self.form(data=request.POST, files=request.FILES)
-        if register_form.is_valid():
-            user = register_form.save()
-            send_verify_email(user)
-            return HttpResponseRedirect(reverse('main_with_msg', args=['successful_register']))
-
-    def get(self, request):
-        return render(request, self.template_name, self.get_context_data())
+    def form_valid(self, form):
+        user = form.save()
+        send_verify_email(user)
+        return HttpResponseRedirect(reverse('main_with_msg', args=self.redirect_with_args))
 
 
 class UserEditView(View):

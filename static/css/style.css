@@ -1101,6 +1101,10 @@ td:first-child {
 	margin-bottom: 20px;
 }
 
+.product_desc {
+	margin-left: 160px;
+}
+
 input.product_quantity {
 	width: 50px;
 	-moz-appearance:textfield;
