@@ -24,10 +24,15 @@ class MainView(View):
     """Контроллер для отображения главной страницы"""
     title = 'магазин'
     template_name = 'mainapp/index.html'
+    model = Product
+
+    def queryset(self):
+        return self.model.objects.order_by('?')[:4]
 
     def get_context_data(self, message=None, **kwargs):
         context = {
-            'title': self.title
+            'title': self.title,
+            'object_list': self.queryset,
         }
 
         if message:

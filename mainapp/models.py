@@ -18,7 +18,6 @@ class Product(models.Model):
     class Meta:
         verbose_name_plural = 'Товары'
 
-
     name = models.CharField(verbose_name='имя продукта', max_length=128)
     image = models.ImageField(upload_to='products_images', blank=True)
     short_desc = models.CharField(verbose_name='краткое описание продукта', max_length=60, blank=True)
@@ -27,7 +26,6 @@ class Product(models.Model):
     quantity = models.PositiveIntegerField(verbose_name='количество на складе', default=0)
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
     is_active = models.BooleanField(verbose_name='активность', default=True)
-
 
     def __str__(self):
         return f"{self.name} ({self.category.name})"

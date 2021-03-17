@@ -114,15 +114,16 @@
 		<div class="related-products clearfix">
 			{% for product in object_list %}
 				<div class="block">
-					<a href="{% url 'basketapp:add' product.pk %}">
+					<a href="{% url 'product' product.pk %}">
 						<img class="product_img" src="{{ product.image|media_folder_products }}" alt="">
 
 						<div class="text">
 							<img src="{% static 'img/icon-hover.png' %}" alt="img">
 							<h4>{{ product.name }}</h4>
 							<p>{{ product.description }}</p>
-							<h3>{{ product.price }} руб.</h5>
+							<h5>{{ product.price }} руб.</h5>
 						</div>
+            <a class="btn btn-secondary" href="{% url 'basket:add' product.pk %}" role="button">В корзину</a>
 					</a>
 				</div>
 			{% endfor %}

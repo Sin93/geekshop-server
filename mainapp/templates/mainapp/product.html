@@ -1,14 +1,104 @@
 {% extends 'mainapp/base.html' %}
 {% load static %}
+{% load project_tags %}
 
 {% block title %}
 {{ title|title }}
 {% endblock %}
 
+{% block menu %}
+  <div class="hero-white">
+    {% include "mainapp/include/inc_menu.html" %}
+  </div>
+{% endblock %}
+
 {% block content %}
-<p>Название: {{ data.name }}</p>
-<p>Описание: {{ data.description }}</p>
-<p>Цена: {{ data.price }}</p>
-<img src="{{ data.image }}" alt="">
-<a href="{% url 'mainapp:all_products' %}">Назад</a>
+  <div class="product_page">
+
+    <section class="product pt-0">
+
+      <header>
+          <div class="container">
+              <h2 class="product_title">{{ data.name }}</h2>
+              <div class="text">
+                <p>{{ data.short_desc }}</p>
+              </div>
+          </div>
+      </header>
+
+      <div class="main">
+        <div class="container">
+          <div class="row product-flex">
+            <div class="col-lg-4 product-flex-info">
+              <div class="clearfix">
+                <div class="clearfix">
+                  <div class="price">
+                    <span class="h3">
+                      {{ data.price }} руб.
+                    </span>
+                  </div>
+
+                    <hr />
+
+                    <div class="info-box">
+                        <span><strong>Категория</strong></span>
+                        <span>{{ data.category.name }}</span>
+                    </div>
+
+                    <hr />
+
+                    <div class="info-box">
+                      <span>
+                        <strong>
+                          Купить
+                        </strong>
+                      </span>
+                      <span>
+                        <span class="col-6">
+                          <a href="{% url 'basket:add' data.pk %}" class="btn btn-danger">Положить в корзину</a>
+                        </span>
+                      </span>
+                    </div>
+
+                    <hr />
+
+                    <div class="info-box">
+                      <span>
+                        <strong>
+                          Описание
+                        </strong>
+                      </span>
+                      <br>
+                      <br>
+                      <span>
+                        {{ data.description }}
+                      </span>
+                      <br>
+                      <br>
+                      <span>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias aliquid consectetur deserunt doloribus eos harum laudantium natus nemo neque numquam, obcaecati odit, pariatur quidem sequi similique, totam veritatis voluptatibus.
+                      </span>
+                    </div>
+                    <hr />
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-8 product-flex-gallery">
+
+                <!--product gallery-->
+
+              <div class="owl-product-gallery owl-carousel owl-theme open-popup-gallery">
+                <a href=""><img src="{{ data.image|media_folder_products }}" alt="{{ data.name }}" /></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        </section>
+  </div>
+
+  <div class="clr"></div>
+
 {% endblock %}
