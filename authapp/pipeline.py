@@ -9,7 +9,7 @@ from social_core.exceptions import AuthForbidden
 import requests
 
 API_VERSION = '5.92'
-USER_FIELDS = ['bdate', 'sex', 'about']
+USER_FIELDS = ['bdate', 'sex', 'about', 'personal', 'domain']
 
 
 def save_user_profile(backend, user, response, *args, **kwargs):
@@ -45,5 +45,15 @@ def save_user_profile(backend, user, response, *args, **kwargs):
             raise AuthForbidden('social_core.backends.vk.VKOAuth2')
         else:
             user.age = age
+
+    try:
+        user.profile.language = data['personal']['langs'][0]
+    except KeyError:
+        pass
+
+    try:
+        user.profile.vk_url = 'https://vk.com/' + data['domain']
+    except KeyError:
+        pass
 
     user.save()

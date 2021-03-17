@@ -51,6 +51,8 @@ class ShopUserProfile(models.Model):
     tagline = models.CharField(verbose_name='теги', max_length=128, blank=True)
     aboutMe = models.TextField(verbose_name='о себе', max_length=512, blank=True)
     gender = models.CharField(verbose_name='пол', max_length=1, choices=GENDER_CHOICES, blank=True)
+    language = models.CharField(verbose_name='Язык', max_length=50, null=True, blank=True)
+    vk_url = models.CharField(verbose_name='Ссылка на профиль', max_length=100, null=True, blank=True)
 
     @receiver(post_save, sender=ShopUser)
     def create_user_profile(sender, instance, created, **kwargs):

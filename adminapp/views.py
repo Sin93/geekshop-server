@@ -86,13 +86,11 @@ class UserChangeActiveView(GeekShopMixin):
     success_url = reverse_lazy('admin_staff:users')
 
     def get_object(self):
-        print(self.pk)
         return get_object_or_404(self.model, pk=self.pk)
 
     def post(self, request, pk):
         self.pk = pk
         user = self.get_object()
-        print(user.email)
         user.is_active = False if user.is_active else True
         user.save()
 
