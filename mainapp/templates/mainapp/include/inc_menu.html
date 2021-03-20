@@ -1,49 +1,58 @@
 <div class="header clearfix">
-  <a href="{% url 'main' %}" class="logo"></a>
-  <ul class="menu">
-    <li>
-      <a href="{% url 'main' %}" {% if request.resolver_match.url_name == "main" %}class="active"{% endif %}>
-        главная
-      </a>
-    </li>
-    <li>
-      <a href="{% url 'mainapp:all_products' %}" {% if request.resolver_match.url_name == "all_products" or request.resolver_match.url_name == "category" %}class="active"{% endif %}>
-        товары
-      </a>
-    </li>
-    <li>
-      <a href="{% url 'contact' %}" {% if request.resolver_match.url_name == "contact" %}class="active"{% endif %}>
-        контакты
-      </a>
-    </li>
-    {% if user.is_authenticated %}
-    <li>
-        <a href="{% url 'auth:edit' %}">
-            {{ user.first_name|default:'Пользователь' }}
-        </a>
-    </li>
-    {% endif %}
-    {% if user.is_superuser %}
-      <li>
-        <a href="{% url 'admin_staff:users' %}">админка</a>
-      </li>
-    {% endif %}
-    <li>
-        {% if user.is_authenticated %}
-          <a href="{% url 'auth:logout' %}">выйти</a>
-        {% else %}
-          <a href="{% url 'auth:login' %}">войти</a>
-        {% endif %}
-    </li>
 
-  </ul>
-  <a href="{% url 'basket:view' %}" class="basket">
-    <span>
-      {% if user.user_basket_cost > 0 %}
-        товаров в корзине на сумму: {% if basket %} {{ user.user_basket_cost }} {% endif %}
-      {% else %}
-        Ваша корзина пуста
-      {% endif %}
-    </span>
-  </a>
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <a href="{% url 'main' %}" class="logo"></a>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
+
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == "main" %}active{% endif %}" aria-current="page" href="{% url 'main' %}">Главная</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == "all_products" or request.resolver_match.url_name == "category" %}active{% endif %}" aria-current="page" href="{% url 'mainapp:all_products' %}">Товары</a>
+          </li>
+
+          {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {{ user.first_name|default:'Пользователь' }}
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              {% if user.is_superuser %}
+                 <li><a class="dropdown-item" href="{% url 'admin_staff:users' %}">Админка</a></li>
+              {% endif %}
+              <li><a class="dropdown-item" href="{% url 'auth:edit' %}">Профиль</a></li>
+              <li><a class="dropdown-item" href="{% url 'basket:view' %}">Корзина</a></li>
+              {% if user.is_superuser or user.is_stuff %}
+              <li><a class="dropdown-item" href="{% url 'admin_staff:all_orders' %}">Заказы клиентов</a></li>
+              {% endif %}
+              <li><a class="dropdown-item" href="{% url 'order:orders_view' %}">Ваши заказы</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'auth:logout' %}">выйти</a></li>
+            </ul>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'auth:login' %}">войти</a>
+            </li>
+          {% endif %}
+
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'basket:view' %}" tabindex="-1" aria-disabled="true">
+              {% if user.user_basket_cost > 0 %}
+                Корзина: {% if basket %} {{ user.user_basket_cost }} руб.{% endif %}
+              {% else %}
+                Ваша корзина пуста
+              {% endif %}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 </div>

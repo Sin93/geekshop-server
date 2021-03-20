@@ -55,7 +55,11 @@
                       </span>
                       <span>
                         <span class="col-6">
+                          {% if data.quantity < 1 %}
+                          <a href="#" class="btn btn-secondary disabled">Нет в наличии</a>
+                          {% else %}
                           <a href="{% url 'basket:add' data.pk %}" class="btn btn-danger">Положить в корзину</a>
+                          {% endif %}
                         </span>
                       </span>
                     </div>

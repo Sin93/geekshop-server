@@ -24,4 +24,14 @@ urlpatterns = [
     path('products/read/category/<str:category>/', adminapp.ProductListView.as_view(), name='products'),
     path('products/update/<int:pk>/', adminapp.ProductUpdateView.as_view(), name='product_update'),
     path('products/change_active/<int:pk>/', adminapp.ProductChangeActive.as_view(), name='product_change_active'),
+
+    path('orders/', adminapp.StuffOrderList.as_view(), name='all_orders'),
+    path('order/<int:pk>', adminapp.StuffOrderUpdate.as_view(), name='order'),
+    path('change_order/', adminapp.StuffChangeOrder.as_view(), name='change_order'),
+    path('add_order_item/', adminapp.StuffAddOrderItem.as_view(), name='add_order_item'),
+    path('orders/processed/', adminapp.StuffOrderProcessedList.as_view(), name='orders_processed'),
+    path('orders/ready/', adminapp.StuffOrderReadyList.as_view(), name='orders_ready'),
+    path('order/ready/<int:pk>', adminapp.StuffOrderIsReady.as_view(), name='order_is_ready'),
+    path('order/issued/<int:pk>', adminapp.StuffOrderIssued.as_view(), name='order_issued'),
+    path('order/delete/<int:pk>', adminapp.StuffOrderDelete.as_view(), name='order_delete')
 ]
