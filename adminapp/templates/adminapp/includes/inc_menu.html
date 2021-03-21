@@ -8,12 +8,14 @@
       <li class="nav-item active">
         <a class="nav-link" href="{% url 'main' %}">На сайт<span class="sr-only">(current)</span></a>
       </li>
+      {% if user.is_superuser %}
       <li class="nav-item">
         <a class="nav-link" href="{% url 'admin_staff:users' %}">Пользователи</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'admin_staff:categories' %}">Категории товаров</a>
       </li>
+      {% endif %}
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           Заказы

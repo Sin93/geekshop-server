@@ -12,6 +12,7 @@ from ordersapp.models import Order, OrderItem
 
 
 class OrdersView(ListView):
+    """Контроллер для отображения заказов пользователя"""
     model = Order
     template_name = 'ordersapp/orders_list.html'
 
@@ -81,6 +82,7 @@ class OrderCreate(View):
 
 
 class OrderDelete(DeleteView):
+    """Контроллер для отмены заказа самим пользователем"""
     model = Order
     success_url = reverse_lazy('ordersapp:orders_view')
 

@@ -261,10 +261,11 @@ class ProductChangeActive(GeekShopMixin):
             return render(request, 'adminapp/products.html', context)
 
 
-class staffOrderList(GeekShopMixin, ListView):
+class StaffOrderList(GeekShopMixin, ListView):
     """Контроллер для отображения всех заказов"""
     model = Order
     template_name = 'adminapp/order_list.html'
+    title = 'Все заказы'
     ordering = ['updated', '-is_active']
     filter = None
     OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
@@ -273,6 +274,7 @@ class staffOrderList(GeekShopMixin, ListView):
         context = super().get_context_data(**kwargs)
         products = Product.objects.filter(is_active=True, quantity__gte=1).order_by('category__name')
         context['products'] = products
+        context['title'] = self.title
         return context
 
     def get_queryset(self):
@@ -286,17 +288,20 @@ class staffOrderList(GeekShopMixin, ListView):
         return queryset
 
 
-class staffOrderProcessedList(staffOrderList):
+class StaffOrderProcessedList(StaffOrderList):
     """Контроллер для отображения ещё не собранных заказов"""
     filter = Order.PROCEEDED
+    title = 'Заказы на сборку'
 
 
-class staffOrderReadyList(staffOrderList):
+class StaffOrderReadyList(StaffOrderList):
     """Контроллер для отображения заказов готовых к выдаче"""
     filter = Order.READY
+    title = 'Заказы на выдачу'
 
 
-class staffOrderIsReady(GeekShopMixin):
+class StaffOrderIsReady(GeekShopMixin):
+    """Контроллер для изменения статуса заказа на "готов к выдаче" """
     def post(self, request, pk):
         order = get_object_or_404(Order, pk=pk)
         order.status = Order.READY
@@ -304,7 +309,8 @@ class staffOrderIsReady(GeekShopMixin):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-class staffOrderIssued(GeekShopMixin):
+class StaffOrderIssued(GeekShopMixin):
+    """Контроллер для изменения статуса заказа на "выдан" """
     def post(self, request, pk):
         order = get_object_or_404(Order, pk=pk)
         order.status = Order.ISSUED
@@ -313,7 +319,8 @@ class staffOrderIssued(GeekShopMixin):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-class staffOrderUpdate(GeekShopMixin, UpdateView):
+class StaffOrderUpdate(GeekShopMixin, UpdateView):
+    """Контроллер для изменения заказа на отдельной странице с применением formset"""
     model = Order
     template_name = 'adminapp/order.html'
     fields = []
@@ -347,7 +354,9 @@ class staffOrderUpdate(GeekShopMixin, UpdateView):
         return super().form_valid(form)
 
 
-class staffAddOrderItem(GeekShopMixin):
+class StaffAddOrderItem(GeekShopMixin):
+    """Контроллер для добавления товара в заказ со страницы со всеми товарами.
+    Ajax запрос посылает скрипт static/js/order_staff.js, он же и обрабатывает ответ"""
     def post(self, request):
         if request.is_ajax():
             ajax = json.loads(request.body.decode('utf-8'))
@@ -374,7 +383,9 @@ class staffAddOrderItem(GeekShopMixin):
                 return JsonResponse(result)
 
 
-class staffChangeOrder(GeekShopMixin):
+class StaffChangeOrder(GeekShopMixin):
+    """Контроллер для изменения заказа со страницы со всеми товарами.
+        Ajax запрос посылает скрипт static/js/order_staff.js, он же и обрабатывает ответ"""
     @staticmethod
     def plus(order_item, product):
         if product.quantity > 0:
@@ -459,6 +470,9 @@ class staffChangeOrder(GeekShopMixin):
             return JsonResponse(result)
 
 
-class staffOrderDelete(GeekShopMixin, DeleteView):
+class StaffOrderDelete(GeekShopMixin, DeleteView):
+    """Контроллер для отмены заказа из админки.
+    На всякий случай, чтобы не забыть: в модели Order переопределён метод delete(), при "удалении" объекта,
+    товар сам возвращается на склад, а заказ деактивируется."""
     model = Order
     success_url = reverse_lazy('admin_staff:all_orders')
