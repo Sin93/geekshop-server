@@ -261,7 +261,7 @@ class ProductChangeActive(GeekShopMixin):
             return render(request, 'adminapp/products.html', context)
 
 
-class StuffOrderList(GeekShopMixin, ListView):
+class staffOrderList(GeekShopMixin, ListView):
     """Контроллер для отображения всех заказов"""
     model = Order
     template_name = 'adminapp/order_list.html'
@@ -286,17 +286,17 @@ class StuffOrderList(GeekShopMixin, ListView):
         return queryset
 
 
-class StuffOrderProcessedList(StuffOrderList):
+class staffOrderProcessedList(staffOrderList):
     """Контроллер для отображения ещё не собранных заказов"""
     filter = Order.PROCEEDED
 
 
-class StuffOrderReadyList(StuffOrderList):
+class staffOrderReadyList(staffOrderList):
     """Контроллер для отображения заказов готовых к выдаче"""
     filter = Order.READY
 
 
-class StuffOrderIsReady(GeekShopMixin):
+class staffOrderIsReady(GeekShopMixin):
     def post(self, request, pk):
         order = get_object_or_404(Order, pk=pk)
         order.status = Order.READY
@@ -304,7 +304,7 @@ class StuffOrderIsReady(GeekShopMixin):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-class StuffOrderIssued(GeekShopMixin):
+class staffOrderIssued(GeekShopMixin):
     def post(self, request, pk):
         order = get_object_or_404(Order, pk=pk)
         order.status = Order.ISSUED
@@ -313,7 +313,7 @@ class StuffOrderIssued(GeekShopMixin):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-class StuffOrderUpdate(GeekShopMixin, UpdateView):
+class staffOrderUpdate(GeekShopMixin, UpdateView):
     model = Order
     template_name = 'adminapp/order.html'
     fields = []
@@ -347,7 +347,7 @@ class StuffOrderUpdate(GeekShopMixin, UpdateView):
         return super().form_valid(form)
 
 
-class StuffAddOrderItem(GeekShopMixin):
+class staffAddOrderItem(GeekShopMixin):
     def post(self, request):
         if request.is_ajax():
             ajax = json.loads(request.body.decode('utf-8'))
@@ -374,7 +374,7 @@ class StuffAddOrderItem(GeekShopMixin):
                 return JsonResponse(result)
 
 
-class StuffChangeOrder(GeekShopMixin):
+class staffChangeOrder(GeekShopMixin):
     @staticmethod
     def plus(order_item, product):
         if product.quantity > 0:
@@ -459,6 +459,6 @@ class StuffChangeOrder(GeekShopMixin):
             return JsonResponse(result)
 
 
-class StuffOrderDelete(GeekShopMixin, DeleteView):
+class staffOrderDelete(GeekShopMixin, DeleteView):
     model = Order
     success_url = reverse_lazy('admin_staff:all_orders')

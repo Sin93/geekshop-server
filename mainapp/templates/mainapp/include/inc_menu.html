@@ -20,7 +20,7 @@
           {% if user.is_authenticated %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              {{ user.first_name|default:'Пользователь' }}
+              {{ user.first_name|default:user.username }}
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
               {% if user.is_superuser %}
@@ -28,7 +28,7 @@
               {% endif %}
               <li><a class="dropdown-item" href="{% url 'auth:edit' %}">Профиль</a></li>
               <li><a class="dropdown-item" href="{% url 'basket:view' %}">Корзина</a></li>
-              {% if user.is_superuser or user.is_stuff %}
+              {% if user.is_superuser or user.is_staff %}
               <li><a class="dropdown-item" href="{% url 'admin_staff:all_orders' %}">Заказы клиентов</a></li>
               {% endif %}
               <li><a class="dropdown-item" href="{% url 'order:orders_view' %}">Ваши заказы</a></li>

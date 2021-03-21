@@ -26,7 +26,7 @@
       </thead>
       <tbody>
         {% for object in object_list %}
-        <tr>
+        <tr {% if object.order.get_status_display == 'выдан' %}class="table-success"{% endif %}>
           <th scope="row">{{ object.number }}</th>
           <td>{{ object.order.created }}</td>
           <td>{{ object.order.updated }}</td>
@@ -35,10 +35,12 @@
             <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#order{{ object.order.pk }}" aria-expanded="false" aria-controls="{{ object.order.pk }}">
               Состав заказа
             </button>
+            {% if object.order.get_status_display != 'выдан' and object.order.get_status_display != 'отменен' %}
             <form method="post" action="{% url 'ordersapp:delete_order' object.order.pk %}">
               {% csrf_token %}
               <button type="submit" class="btn btn-danger btn-sm" name="button">Отменить заказ</button>
             </form>
+            {% endif %}
           </td>
         </tr>
         <tr>

@@ -22,7 +22,7 @@ class OrdersView(ListView):
         return context
 
     def get_queryset(self):
-        queryset = Order.objects.filter(user=self.request.user, is_active=True).exclude(status=Order.CANCEL)
+        queryset = Order.objects.filter(user=self.request.user).exclude(status=Order.CANCEL)
         result = []
 
         for num, itm in enumerate(queryset):
