@@ -66,45 +66,44 @@
 			<a class="explore" href="{% url 'mainapp:all_products' %}">показать все <img src="{% static 'img/arrow.png' %}" alt=""></a>
 		</div>
 
-		{% if products.paginator.num_pages > 1 %}
+		{% if page_obj.paginator.num_pages > 1 %}
 		<nav aria-label="...">
 			<ul class="pagination justify-content-center">
-				<li class="page-item {% if not products.has_previous %}disabled{% endif %}">
+				<li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
 					<a class="page-link" href="
-					{% if not products.has_previous %}
+					{% if not page_obj.has_previous %}
 						#
 					{% else %}
 						{% if category_url %}
-							{% url 'mainapp:category_page' category_url.url products.previous_page_number %}
+							{% url 'mainapp:category_page' category_url page_obj.previous_page_number %}
 						{% else %}
-							{% url 'mainapp:page' products.previous_page_number %}
+							{% url 'mainapp:page' page_obj.previous_page_number %}
 						{% endif %}
 					{% endif %}" tabindex="-1">Предыдущая</a>
 				</li>
 
-				{% for page in products.paginator.page_range %}
-					<li class="page-item {% if page == current_page %}active{% endif %}">
+				{% for page in paginator.page_range %}
+					<li class="page-item {% if page == page_obj.number %}active{% endif %}">
 						<a class="page-link" href="
 							{% if category_url %}
-								{% url 'mainapp:category_page' category_url.url page %}
+								{% url 'mainapp:category_page' category_url page %}
 							{% else %}
 								{% url 'mainapp:page' page %}
 							{% endif %}">
 							{{ page }}
-							{% if page == current_page %}<span class="sr-only">(current)</span>{% endif %}
 						</a>
 					</li>
 				{% endfor %}
 
-				<li class="page-item {% if not products.has_next %}disabled{% endif %}">
+				<li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
 					<a class="page-link" href="
-					{% if not products.has_next %}
+					{% if not page_obj.has_next %}
 						#
 					{% else %}
 						{% if category_url %}
-							{% url 'mainapp:category_page' category_url.url products.next_page_number %}
+							{% url 'mainapp:category_page' category_url page_obj.next_page_number %}
 						{% else %}
-							{% url 'mainapp:page' products.next_page_number %}
+							{% url 'mainapp:page' page_obj.next_page_number %}
 						{% endif %}
 					{% endif %}">Следующая</a>
 				</li>
@@ -113,17 +112,18 @@
 		{% endif %}
 
 		<div class="related-products clearfix">
-			{% for product in products %}
+			{% for product in object_list %}
 				<div class="block">
-					<a href="{% url 'basketapp:add' product.pk %}">
+					<a href="{% url 'product' product.pk %}">
 						<img class="product_img" src="{{ product.image|media_folder_products }}" alt="">
 
 						<div class="text">
 							<img src="{% static 'img/icon-hover.png' %}" alt="img">
 							<h4>{{ product.name }}</h4>
 							<p>{{ product.description }}</p>
-							<h3>{{ product.price }} руб.</h5>
+							<h5>{{ product.price }} руб.</h5>
 						</div>
+            <a class="btn btn-secondary" href="{% url 'basket:add' product.pk %}" role="button">В корзину</a>
 					</a>
 				</div>
 			{% endfor %}

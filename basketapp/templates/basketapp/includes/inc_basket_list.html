@@ -1,35 +1,34 @@
 {% load static %}
+{% load project_tags %}
 
 {% for item in basket_items %}
   <div class="basket_record" id='{{ item.pk }}'>
-    <img src="{% if item.product.image %}{{ item.product.image }}{% else %}{% static 'img/product-11.jpg' %}{% endif %}"
-         alt="{{ item.product.short_desc }}">
-    <span class="category_name">Категория: {{ item.product.category.name }}</span>
-    <br>
-    <span class="product_name">Название: {{ item.product.name }}</span>
-    <br>
-    <span class="product_price" price='{{ item.product.price }}'>Цена: {{ item.product.price }}&nbspруб</span>
-    <br>
-    <span>Количество:
-      <span>
-        <input type='number' class='product_quantity' value='{{ item.quantity }}' id='{{ item.pk }}'>
-      </span>
-      <i class="fa fa-plus-square-o fa-2x" name='plus' aria-hidden="true" id='{{ item.pk }}'></i>
-      <i class="fa fa-minus-square-o fa-2x" name='minus' aria-hidden="true" id='{{ item.pk }}'></i>
-    </span>
-    <br>
-    <a class="btn btn-primary" href="{% url 'basket:remove' item.pk %}" role="button">Удалить</a>
+    <div class="card" style="width: 18rem; height: 700px;">
+      <img src="{{ item.product.image|media_folder_products }}" class="card-img-top" alt="{{ item.product.name }}">
+      <div class="card-body">
+        <h5 class="card-title">{{ item.product.name }}</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Категория: {{ item.product.category.name }}</li>
+          <li class="list-group-item">
+            <span class="product_price" price='{{ item.product.price }}'>Цена: {{ item.product.price }}&nbspруб</span>
+          </li>
+          <li class="list-group-item">
+            <span>Количество:
+              <span>
+                <input type='number' class='product_quantity' value='{{ item.quantity }}' id='{{ item.pk }}'>
+              </span>
+            </span>
+            <div>
+              <i class="fa fa-plus-square-o fa-2x" name='plus' aria-hidden="true" id='{{ item.pk }}'></i>
+              <i class="fa fa-minus-square-o fa-2x" name='minus' aria-hidden="true" id='{{ item.pk }}'></i>
+            </div>
+          </li>
+        </ul>
+        <p class="card-text"><b>Описание:</b></p>
+        <p class="card-text">{{ item.product.short_desc }}</p>
+        <a href="{% url 'product' item.product.pk %}" class="btn btn-primary">К товару</a>
+        <a href="{% url 'basket:remove' item.pk %}" class="btn btn-primary">Удалить</a>
+      </div>
+    </div>
   </div>
 {% endfor %}
-
-{% if basket_items %}
-  <div class="basket_summary">
-    В корзине <span class='total_quantity'>{{ user.user_basket_quantity }}</span> товаров общей стоимостью
-              <span class='total_cost'>{{ user.user_basket_cost }}</span> руб
-  </div>
-{% endif %}
-
-
-<button class="btn btn-round">
-  <a href="{% url 'main' %}">на главную</a>
-</button>

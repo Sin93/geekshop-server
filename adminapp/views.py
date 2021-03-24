@@ -30,7 +30,11 @@ class GeekShopMixin(View):
 
     @method_decorator(user_passes_test(lambda u: u.is_superuser or u.is_staff))
     def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+        if request.method.lower() in self.http_method_names:
+            handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
+        else:
+            handler = self.http_method_not_allowed
+        return handler(request, *args, **kwargs)
 
 
 class UsersListView(GeekShopMixin, ListView):
@@ -75,17 +79,22 @@ class UserUpdateView(GeekShopMixin, UpdateView):
         return context
 
 
-class UserChangeActiveView(GeekShopMixin, DeleteView):
+class UserChangeActiveView(GeekShopMixin):
     """Контроллер для активации/деактивации пользователя в админке"""
     model = ShopUser
+    pk = None
     success_url = reverse_lazy('admin_staff:users')
 
-    def delete(self, request, *args, **kwargs):
+    def get_object(self):
+        return get_object_or_404(self.model, pk=self.pk)
+
+    def post(self, request, pk):
+        self.pk = pk
         user = self.get_object()
         user.is_active = False if user.is_active else True
         user.save()
 
-        return HttpResponseRedirect(self.get_success_url())
+        return HttpResponseRedirect(self.success_url)
 
 
 class CategoriesView(GeekShopMixin, ListView):

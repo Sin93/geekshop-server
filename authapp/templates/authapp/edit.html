@@ -1,5 +1,6 @@
 {% extends 'authapp/base.html' %}
 {% load static %}
+{% load project_tags %}
 
 
 {% block content %}
@@ -9,6 +10,7 @@
   <form class="form-horizontal" action="{% url 'auth:edit' %}" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       {{ edit_form.as_p }}
+      {{ profile_form.as_p }}
       <input class="form-control" type="submit" value="сохранить">
   </form>
   <button class="btn btn-round form-control last">
@@ -16,5 +18,7 @@
           на главную
       </a>
   </button>
-  <div class="user_avatar"><img src="/media/{{ user.avatar }}"></div>
+  <div class="user_avatar">
+    <img src="{{ user.avatar|media_folder_users }}" alt="{{ user.name }}">
+  </div>
 {% endblock %}

@@ -3,8 +3,8 @@
 
 
 {% block content %}
-{% if login_form.non_field_errors %}
-  {{ login_form.non_field_errors|escape }}
+{% if form.non_field_errors %}
+  {{ form.non_field_errors|escape }}
 {% endif %}
 {% if messages %}
   {% for message in messages %}
@@ -14,13 +14,27 @@
 <form class="form-horizontal" action="{% url 'auth:login' %}" method="post">
   {% csrf_token %}
   <div class="mb-3">
-    {{ login_form.username }}
+    {{ form.username }}
   </div>
   <div class="mb-3">
-    {{ login_form.password }}
+    {{ form.password }}
   </div>
   <input class="form-control" type="submit" value="войти">
-  <a class="form-control btn btn-primary" href="{% url 'auth:register' %}" role="button">Зарегистрироваться</a>
+  <button class="btn btn-round form-control">
+      <a class="form-control btn btn-primary" href="{% url 'auth:register' %}" role="button">
+        Зарегистрироваться
+      </a>
+  </button>
+  <button class="btn btn-round form-control">
+      <a href="{% url 'social:begin' 'vk-oauth2' %}?next=/">
+        Вход через ВКонтакте
+      </a>
+  </button>
+  <button class="btn btn-round form-control">
+      <a href="{% url 'main' %}">
+        На главную
+      </a>
+  </button>
 </form>
 
 {% endblock %}

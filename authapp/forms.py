@@ -1,4 +1,4 @@
-from authapp.models import ShopUser
+from authapp.models import ShopUser, ShopUserProfile
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 import hashlib
@@ -34,6 +34,13 @@ class ShopUserRegisterForm(UserCreationForm):
             raise forms.ValidationError("слишком короткое имя пользователя!")
 
         return first_name
+
+    def clean_age(self):
+        age = self.cleaned_data['age']
+        if int(age) < 18:
+            raise forms.ValidationError("Ты слишком зелен!")
+
+        return age
 
     def save(self, *args, **kwargs):
         user = super(ShopUserRegisterForm, self).save()
@@ -86,3 +93,21 @@ class ShopUserEditForm(UserChangeForm):
             raise forms.ValidationError("слишком короткое имя пользователя!")
 
         return first_name
+
+    def clean_age(self):
+        age = self.cleaned_data['age']
+        if int(age) < 18:
+            raise forms.ValidationError("Ты слишком зелен!")
+
+        return age
+
+
+class ShopUserProfileEditForm(forms.ModelForm):
+    class Meta:
+        model = ShopUserProfile
+        fields = ('tagline', 'aboutMe', 'gender', 'language')
+
+    def __init__(self, *args, **kwargs):
+        super(ShopUserProfileEditForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'

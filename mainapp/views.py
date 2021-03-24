@@ -1,5 +1,11 @@
+# Django
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404
+from django.views.generic.base import View
+from django.views.generic.list import ListView
+from django.utils.translation import gettext as _
+# Project
 from mainapp.models import ProductCategory, Product
 
 import os
@@ -7,73 +13,109 @@ import json
 
 
 THIS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+FIXTURES_DIR = os.path.join(THIS_DIR, 'mainapp', 'fixtures')
 MESSAGES = {
     'successful_register': 'Вы успешно зарегистрировались. На вашу почту отправлено письмо со ссылкой для подтверждения регистрации.',
     'successful_verify': 'E-mail подтверждён, регистрация успешно завершена.'
 }
 
 
-def main(request, message=None):
-    context = {
-        'title': 'магазин'
-    }
+class MainView(View):
+    """Контроллер для отображения главной страницы"""
+    title = 'магазин'
+    template_name = 'mainapp/index.html'
+    model = Product
 
-    if message:
-        context['message'] = MESSAGES[message]
+    def queryset(self):
+        return self.model.objects.order_by('?')[:4]
 
-    return render(request, 'mainapp/index.html', context)
+    def get_context_data(self, message=None, **kwargs):
+        context = {
+            'title': self.title,
+            'object_list': self.queryset,
+        }
 
+        if message:
+            context['message'] = MESSAGES[message]
 
-def products(request, category=None, page=1):
-    """В данном проекте сделано таким образом, что товар не может быть активен,
-    если деактивирована категория. По этому проверку на активность категории
-    не делаю"""
-    if not category:
-        products = Product.objects.filter(is_active=True).order_by('price')
-    else:
-        category = get_object_or_404(ProductCategory, url=category)
-        products = Product.objects.filter(
-            category=category,
-            is_active=True
-        ).order_by('price')
+        return context
 
-    paginator = Paginator(products, 3)
-
-    try:
-        products_paginator = paginator.page(page)
-    except PageNotAnInteger:
-        products_paginator = paginator.page(1)
-    except EmptyPage:
-        products_paginator = paginator.page(paginator.num_pages)
-
-    context = {
-        'title': 'каталог',
-        'category_url': category,
-        'categories': ProductCategory.objects.filter(is_active=True),
-        'products': products_paginator,
-        'current_page': page,
-    }
-
-    return render(request, 'mainapp/products.html', context)
+    def get(self, request, message=None):
+        return render(request, self.template_name, self.get_context_data(message))
 
 
-def view_product(request, id):
-    product = get_object_or_404(Product, pk=id)
-    context = {
-        'title': product.name,
-        'data': product
-    }
-    return render(request, 'mainapp/product.html', context)
+class ProductListView(ListView):
+    """Контроллер для отображения всех товаров в каталоге"""
+    title = 'каталог'
+    template_name = 'mainapp/products.html'
+    model = Product
+    paginate_by = 3
+    paginator_class = Paginator
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.title
+        context['categories'] = ProductCategory.objects.filter(is_active=True)
+        return context
+
+    def get_queryset(self):
+        return Product.objects.all()
 
 
-def contact(request):
-    with open(os.path.join(THIS_DIR, 'mainapp', 'fixtures', 'contacts.json'), 'r') as read_file:
-        contacts_list = json.load(read_file)
+class CategoryProductListView(ProductListView):
+    """Контроллер для отображения всех товаров выбранной категории"""
+    category = None
 
-    context = {
-        'title': 'Контакты',
-        'contacts': contacts_list,
-    }
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.category:
+            context['category_url'] = self.category.url
+        return context
 
-    return render(request, 'mainapp/contact.html', context)
+    def get_queryset(self):
+        return Product.objects.filter(category=self.category, is_active=True)
+
+    def get(self, request, category=None, **kwargs):
+        self.category = get_object_or_404(ProductCategory, url=category)
+        return super().get(request, category=None, **kwargs)
+
+
+class ProductView(View):
+    """Контроллер для отображения выбранного товара"""
+    model = Product
+
+    def queryset(self, pk):
+        return get_object_or_404(self.model, pk=pk)
+
+    def get_context_data(self, pk):
+        product = self.queryset(pk)
+        context = {
+            'title': product.name,
+            'data': product
+        }
+        return context
+
+    def get(self, request, pk):
+        return render(request, 'mainapp/product.html', self.get_context_data(pk))
+
+
+class ContactsView(View):
+    """Контроллер для отображения контактной информации магазина"""
+
+    title = 'Контакты'
+    template_name = 'mainapp/contact.html'
+    file = 'contacts.json'
+
+    def get_contact_list(self):
+        with open(os.path.join(FIXTURES_DIR, self.file), 'r') as read_file:
+            return json.load(read_file)
+
+    def get_context_data(self):
+        context = {
+            'title': self.title,
+            'contacts': self.get_contact_list(),
+        }
+        return context
+
+    def get(self, request):
+        return render(request, self.template_name, self.get_context_data())

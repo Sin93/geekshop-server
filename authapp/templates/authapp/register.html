@@ -3,12 +3,12 @@
 
 
 {% block content %}
-{% if register_form.errors %}
-  {{ register_form.errors|escape }}
+{% if form.errors %}
+  {{ form.errors|escape }}
 {% endif %}
 <form class="form-horizontal" action="{% url 'auth:register' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ register_form.as_p }}
+    {{ form.as_p }}
     <br>
     <input class="form-control" type="submit" value="зарегистрироваться">
     <a class="form-control btn btn-primary" href="{% url 'auth:login' %}" role="button">Войти</a>

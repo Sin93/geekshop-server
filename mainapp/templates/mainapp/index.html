@@ -1,5 +1,6 @@
 {% extends 'mainapp/base.html' %}
 {% load static %}
+{% load project_tags %}
 
 {% block title %}
 {{ title|title }}
@@ -23,30 +24,23 @@
 {% block content %}
 <div class="featured">
 	<div class="featured-menu">
-			<a class="active" href="#">Популярные</a><a href="#">Новинки</a>
+			<a class="active" href="#">Случайные</a><a href="{% url 'mainapp:all_products' %}">Новинки</a>
 	</div>
-	<a class="explore" href="#">показать все <img src="{% static 'img/arrow.png' %}" alt=""></a>
+	<a class="explore" href="{% url 'mainapp:all_products' %}">показать все<img src="{% static 'img/arrow.png' %}" alt=""></a>
 	<div class="clearfix">
 	</div>
 	<div class="tab-content">
-		<div class="block">
-			<a href="#"><img src="{% static 'img/product-1.jpg' %}" alt="">
-				<div class="text">
-					<img src="{% static 'img/icon-hover.png' %}" alt="img">
-					<h4>Отличный стул</h4>
-					<p>Расположитесь комфортно. </p>
-				</div>
-			</a>
-		</div>
-		<div class="block">
-			<a href="#"><img src="{% static 'img/product-2.jpg' %}" alt="">
-				<div class="text">
-					<img src="{% static 'img/icon-hover.png' %}" alt="">
-					<h4>Стул повышенного качества</h4>
-					<p>Не оторваться. </p>
-				</div>
-			</a>
-		</div>
+    {% for product in object_list %}
+      <div class="block">
+        <a href="{% url 'product' product.pk %}"><img class="random_product" src="{{ product.image|media_folder_products }}" alt="{{ product.name }}">
+          <div class="text">
+            <img src="{% static 'img/icon-hover.png' %}" alt="img">
+            <h4>{{ product.name }}</h4>
+            <p>{{ product.short_desc }}</p>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
 	</div>
 </div>
 
