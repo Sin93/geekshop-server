@@ -15,11 +15,12 @@
   {% endblock %}
   {% block js %}
   {% endblock %}
+  {% csrf_token %}
 </head>
 <body>
   <div class="container">
         <div class="hero-white">
-          {% include "basketapp/includes/inc_basket_menu.html" %}
+          {% include "mainapp/include/inc_menu.html" %}
         </div>
     <div class="row">
       <div class="h2 text-center head basket_header">
@@ -46,8 +47,8 @@
               <div class="card-body">
                 <h5 class="card-title">Сумма товаров</h5>
                 <p class="card-text">В корзине <span class='total_quantity'>{{ user.user_basket_quantity }}</span> товаров</p>
-                <p class="card-text">Общая стоимость: <span class='total_cost'>{{ user.user_basket_cost }}</span> руб</p>
-                <a href="#" class="btn btn-primary">Оформить заказ</a>
+                <p class="card-text" id="total_cost">Общая стоимость: <span class='total_cost'>{{ user.user_basket_cost }}</span> руб</p>
+                <button type="button" class="btn btn-success" id="create_order">Оформить заказ</button>
               </div>
             </div>
           {% endif %}

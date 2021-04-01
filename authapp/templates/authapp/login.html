@@ -3,6 +3,32 @@
 
 
 {% block content %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Права доступа</th>
+        <th scope="col">username</th>
+        <th scope="col">пароль</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Суперпользователь (Admin/SuperUser)</td>
+        <td>django</td>
+        <td>geekbrains</td>
+      </tr>
+      <tr>
+        <td>Персонал (staff)</td>
+        <td>staff</td>
+        <td>staff</td>
+      </tr>
+      <tr>
+        <td>Обычный пользователь</td>
+        <td>user</td>
+        <td>user</td>
+      </tr>
+    </tbody>
+  </table>
 {% if form.non_field_errors %}
   {{ form.non_field_errors|escape }}
 {% endif %}

@@ -1190,3 +1190,20 @@ input.product_quantity::-webkit-inner-spin-button {
 	height: 700px;
 	margin-bottom: 20px;
 }
+
+.navbar-nav {
+	margin-top: 70px;
+}
+
+.header {
+	width: 1150px;
+}
+
+.header ul {
+	margin-left: auto;
+	margin-right: -0.3em;
+}
+
+ul .large {
+	width: 500px;
+}
