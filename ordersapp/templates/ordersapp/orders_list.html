@@ -1,0 +1,81 @@
+{% extends 'mainapp/base.html' %}
+{% load static %}
+{% load project_tags %}
+
+{% block title %}
+{{ title|title }}
+{% endblock %}
+
+{% block menu %}
+  <div class="hero-white">
+    {% include "mainapp/include/inc_menu.html" %}
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Дата создания</th>
+          <th scope="col">Последнее обновление</th>
+          <th scope="col">Статус</th>
+          <th scope="col">кнопка</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for object in object_list %}
+        <tr {% if object.order.get_status_display == 'выдан' %}class="table-success"{% endif %}>
+          <th scope="row">{{ object.number }}</th>
+          <td>{{ object.order.created }}</td>
+          <td>{{ object.order.updated }}</td>
+          <td>{{ object.order.get_status_display }}</td>
+          <td>
+            <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#order{{ object.order.pk }}" aria-expanded="false" aria-controls="{{ object.order.pk }}">
+              Состав заказа
+            </button>
+            {% if object.order.get_status_display != 'выдан' and object.order.get_status_display != 'отменен' %}
+            <form method="post" action="{% url 'ordersapp:delete_order' object.order.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm" name="button">Отменить заказ</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td colspan="5">
+            <div class="collapse" id="order{{ object.order.pk }}">
+              <div class="card card-body">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Наименование товара</th>
+                      <th scope="col">Цена</th>
+                      <th scope="col">Количество</th>
+                      <th scope="col">Сумма</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in object.order_items %}
+                    <tr>
+                      <td>{{ item.product.name }}</td>
+                      <td>{{ item.product.price }}</td>
+                      <td>{{ item.quantity }} </td>
+                      <td>{{ item.get_product_cost }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="clr"></div>
+
+{% endblock %}

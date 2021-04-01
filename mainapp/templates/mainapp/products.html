@@ -123,7 +123,12 @@
 							<p>{{ product.description }}</p>
 							<h5>{{ product.price }} руб.</h5>
 						</div>
-            <a class="btn btn-secondary" href="{% url 'basket:add' product.pk %}" role="button">В корзину</a>
+            {% if product.quantity < 1 %}
+            <a href="#" class="btn btn-secondary disabled">Нет в наличии</a>
+            {% else %}
+            <a href="{% url 'basket:add' product.pk %}" class="btn btn-secondary">В корзину</a>
+            {% endif %}
+
 					</a>
 				</div>
 			{% endfor %}

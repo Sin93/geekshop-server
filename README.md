@@ -36,8 +36,19 @@ pyhton3 -m venv venv
 
 pip install -r requirements.txt
 ```
-5. Запустите проект
+5. Перейдите в папку с проектом
 ```
 cd geekshop-server
+```
+6. Примените миграции
+```
+python manage.py migrate
+```
+7. Импортируйте демонстрационные данные в базу данных
+```
+python manage.py import
+```
+8. Запустите проект
+```
 python manage.py runserver
 ```

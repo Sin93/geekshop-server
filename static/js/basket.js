@@ -2,8 +2,8 @@ $(document).ready(function (){
 
   function current_value () {
     // Функция для обновления текущих значений количества каждого товара
-    var inputs = $('.product_quantity')
-    var current_values = {}
+    let inputs = $('.product_quantity')
+    let current_values = {}
     inputs.each(function(index, element) {
       current_values[`${element.id}`] = element.value
     })
@@ -17,11 +17,11 @@ $(document).ready(function (){
       url: `/basket/edit/${Number(input_id)}/${Number(input_value)}/`,
       success: function(data) {
 
-        if (data.result == false) {
+        if (data.result === false) {
           // если сервер вернул false значит что-то пошло не так и алертим ошибку
           alert('Ошибка на сервере, значение не изменено!')
           $(`.basket_list#${input_id}`).value = current_input_value[input_id]
-        } else if (data.result == 'delete') {
+        } else if (data.result === 'delete') {
           // если сервер вернул delete и id, то удаляем соответствующий блок
           $(`.basket_record#${data.id}`).remove();
           // обновляем текущие значения количества товаров в словаре
@@ -43,19 +43,19 @@ $(document).ready(function (){
   }
 
   // словарь с текущим количеством каждого товара в корзине
-  var current_input_value = current_value()
+  let current_input_value = current_value()
 
   $('.basket_list').on('click', 'i', function () {
     // берём иконку на которую нажали
-    var target_input = event.target;
+    let target_input = event.target;
     // берём по id иконки - Input в котором должно измениться значение
     target_input = $(`.product_quantity[id=${target_input.id}]`)
 
-    if (event.target.attributes.name.value == 'plus') {
+    if (event.target.attributes.name.value === 'plus') {
       // если иконка плюс то делаем ajax запрос на сервер
       send_ajax(Number(target_input.attr('id')), Number(target_input.val()) + 1)
 
-    } else if (event.target.attributes.name.value == 'minus') {
+    } else if (event.target.attributes.name.value === 'minus') {
       // если иконка минуса то делаем ajax запрос на сервер
       send_ajax(Number(target_input.attr('id')), Number(target_input.val()) - 1)
     }
@@ -65,11 +65,11 @@ $(document).ready(function (){
 
   $('.basket_list').on('change', 'input', function () {
     // берём элемент, который менялся
-    var target_input = event.target;
+    let target_input = event.target;
 
     if (Number(target_input.value) <= 0) {
       // если значение <= 0, то спрашиваем удалить товар из корзины?
-      confirm_deletion = confirm('Удалить товар из корзины?')
+      let confirm_deletion = confirm('Удалить товар из корзины?')
       if (confirm_deletion) {
         // если удаляем товар, то отправляем на сервер ajax с 0 товаров
         send_ajax(Number(target_input.id), 0)
@@ -84,4 +84,50 @@ $(document).ready(function (){
 
     event.preventDefault();
   });
+
+  function create_order_ajax() {
+    console.log(current_input_value)
+    let cookie = document.cookie
+    let csrfToken = cookie.substring(cookie.indexOf('csrf') + 10)
+
+    console.log(csrfToken)
+    $.ajax({
+      method:'POST',
+      url: '/order/create_order/',
+      headers: {
+         'X-CSRFToken': csrfToken
+       },
+      data: JSON.stringify({ order: current_input_value }),
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      success: function(data) {
+        console.log(data)
+        if (data.result.result) {
+          window.open('/order/')
+        } else {
+          console.log(data.result.errors)
+          $('<p>', {
+              'class': 'card-text',
+              text: 'ОШИБКИ',
+              style: 'color: Red',
+              id: 'errors'
+            }).insertAfter($('#total_cost'))
+          $.each(data.result.errors, function (index, element) {
+            let error = $('<p>', {
+              'class': 'card-text',
+              text: element,
+              style: 'color: Red'
+            })
+            let total_cost = $('#errors')
+            console.log(total_cost)
+            error.insertAfter(total_cost)
+          })
+        }
+      }
+    })
+  }
+
+  $('.basket_info').on('click', 'button', function() {
+    create_order_ajax()
+  })
 });
